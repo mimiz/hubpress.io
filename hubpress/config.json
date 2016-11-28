@@ -6,7 +6,9 @@
   },
   "site": {
     "title": "Rémi's Blog",
-    "description": "A new blog ..."
+    "description": "A new blog ...",
+    "postsPerPage": "5",
+    "googleAnalytics": "UA-18243278-5"
   },
   "socialnetwork": {
     "twitter": "mimiz33",
@@ -14,6 +16,6 @@
     "github": "mimiz33"
   },
   "theme": {
-    "name": "casper"
+    "name": "uno-zen"
   }
 }
