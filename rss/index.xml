@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Remi Goyard]]></title><description><![CDATA[Remi Goyard]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 28 Nov 2016 06:30:32 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
+<p>In this blog post I will explain how to create and use Events in Node.Js
+The main purpose is to demonstrate the following :</p>
+</div>
+<div class="paragraph">
+<p>I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done.
+Then I would like other modules (such as b module) to be able to subscribe to those operations.</p>
+</div>
+<div class="paragraph">
+<p>In order to solve this I will create an EventManager object based on node events.</p>
+</div>
+<div class="paragraph">
+<p>Create the files :</p>
+</div>
+<div class="listingblock">
+<div class="title">a.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var operations = {
+  add:function(){
+    // operation for add
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">b.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+  }
+}
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So the purpose is more than simple, when <code>a.add</code> is called, we want the function <code>b.someCodeWhenAddInA</code> to be called, and we also want to easylly add the ability to add modules that will execute code on <code>a.add</code> called.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create the <code>EventManager</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">EventManager.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var util         = require("util");
+var EventEmitter = require("events").EventEmitter;
+function EventManager(){
+    EventEmitter.call(this);
+}
+
+util.inherits(EventManager, EventEmitter);
+
+module.exports = new EventManager();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+refer to the documentation to know more about <a href="https://nodejs.org/api/events.html">node js events</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit the code in <code>a</code> and <code>b</code> modules :</p>
+</div>
+<div class="listingblock">
+<div class="title">a.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var operations = {
+  add:function(){
+    // operation for add
+    EventManager.emit('addedToA');
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">b.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+    console.log('someCodeWhenAddInA has been executed in b');
+  }
+}
+EventManager.on('addedToA', b.someCodeWhenAddInA);
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now let&#8217;s simply create a runner file to try our code</p>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
+var b = require('./b');
+
+a.add();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should print <strong><em>someCodeWhenAddInA has been executed in b</em></strong> in the console.</p>
+</div>
+<div class="paragraph">
+<p>And that&#8217;s all !</p>
+</div>
+<div class="paragraph">
+<p>Now if you want to create a <code>c</code> module which will listen to the same event, it&#8217;s easy, and no need to edit the <code>a</code> module anymore :</p>
+</div>
+<div class="listingblock">
+<div class="title">c.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var c = {
+  anotherFonction:function(){
+    // this function should be executed after a.add is executed
+    console.log('anotherFonction has been executed in c');
+  }
+}
+EventManager.on('addedToA', c.anotherFonction);
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
+var b = require('./b'); <i class="conum" data-value="1"></i><b>(1)</b>
+var c = require('./c'); <i class="conum" data-value="2"></i><b>(2)</b>
+
+a.add();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will print :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>someCodeWhenAddInA has been executed in b
+anotherFonction has been executed in c</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you inverse the <strong>1</strong> and <strong>2</strong> the log will also be impacted.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here we are, comments are appreciated</p>
+</div>]]></description><link>https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</guid><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
