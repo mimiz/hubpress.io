@@ -5,7 +5,8 @@
     "branch": "master"
   },
   "site": {
-    "title": "Remi Goyard"
+    "title": "Rémi's Blog",
+    "description": "A new blog ..."
   },
   "socialnetwork": {
     "twitter": "mimiz33",
