@@ -4,7 +4,15 @@
     "repositoryName": "mimiz.github.io",
     "branch": "master"
   },
+  "site": {
+    "title": "Remi Goyard"
+  },
+  "socialnetwork": {
+    "twitter": "mimiz33",
+    "googleplus": "",
+    "github": "mimiz33"
+  },
   "theme": {
-    "name": "Casper"
+    "name": "casper"
   }
 }
