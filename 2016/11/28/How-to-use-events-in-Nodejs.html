@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How to use events in Node.js</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://mimiz.github.io/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="//mimiz.github.io/themes/casper/assets/css/screen.css?v=1480314632325" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Remi Goyard" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to use events in Node.js" />
+    <meta property="og:description" content="In this blog post I will explain how to create and use Events in Node.Js The main purpose is to demonstrate the following : I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done. Then I" />
+    <meta property="og:url" content="https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to use events in Node.js" />
+    <meta name="twitter:description" content="In this blog post I will explain how to create and use Events in Node.Js The main purpose is to demonstrate the following : I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done. Then I" />
+    <meta name="twitter:url" content="https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Remi Goyard" href="https://mimiz.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">How to use events in Node.js</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-11-28">28 November 2016</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="paragraph">
+<p>In this blog post I will explain how to create and use Events in Node.Js
+The main purpose is to demonstrate the following :</p>
+</div>
+<div class="paragraph">
+<p>I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done.
+Then I would like other modules (such as b module) to be able to subscribe to those operations.</p>
+</div>
+<div class="paragraph">
+<p>In order to solve this I will create an EventManager object based on node events.</p>
+</div>
+<div class="paragraph">
+<p>Create the files :</p>
+</div>
+<div class="listingblock">
+<div class="title">a.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var operations = {
+  add:function(){
+    // operation for add
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">b.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+  }
+}
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So the purpose is more than simple, when <code>a.add</code> is called, we want the function <code>b.someCodeWhenAddInA</code> to be called, and we also want to easylly add the ability to add modules that will execute code on <code>a.add</code> called.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create the <code>EventManager</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">EventManager.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var util         = require("util");
+var EventEmitter = require("events").EventEmitter;
+function EventManager(){
+    EventEmitter.call(this);
+}
+
+util.inherits(EventManager, EventEmitter);
+
+module.exports = new EventManager();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+refer to the documentation to know more about <a href="https://nodejs.org/api/events.html">node js events</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit the code in <code>a</code> and <code>b</code> modules :</p>
+</div>
+<div class="listingblock">
+<div class="title">a.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var operations = {
+  add:function(){
+    // operation for add
+    EventManager.emit('addedToA');
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">b.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+    console.log('someCodeWhenAddInA has been executed in b');
+  }
+}
+EventManager.on('addedToA', b.someCodeWhenAddInA);
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now let&#8217;s simply create a runner file to try our code</p>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
+var b = require('./b');
+
+a.add();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should print <strong><em>someCodeWhenAddInA has been executed in b</em></strong> in the console.</p>
+</div>
+<div class="paragraph">
+<p>And that&#8217;s all !</p>
+</div>
+<div class="paragraph">
+<p>Now if you want to create a <code>c</code> module which will listen to the same event, it&#8217;s easy, and no need to edit the <code>a</code> module anymore :</p>
+</div>
+<div class="listingblock">
+<div class="title">c.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
+var c = {
+  anotherFonction:function(){
+    // this function should be executed after a.add is executed
+    console.log('anotherFonction has been executed in c');
+  }
+}
+EventManager.on('addedToA', c.anotherFonction);
+module.exports = b;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
+var b = require('./b'); <i class="conum" data-value="1"></i><b>(1)</b>
+var c = require('./c'); <i class="conum" data-value="2"></i><b>(2)</b>
+
+a.add();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will print :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>someCodeWhenAddInA has been executed in b
+anotherFonction has been executed in c</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you inverse the <strong>1</strong> and <strong>2</strong> the log will also be impacted.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here we are, comments are appreciated</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://mimiz.github.io/author/mimiz/" style="background-image: url(https://avatars.githubusercontent.com/u/377238?v&#x3D;3)"><span class="hidden">mimiz33's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://mimiz.github.io/author/mimiz/">mimiz33</a></h4>
+
+                    <p>Read <a href="https://mimiz.github.io/author/mimiz/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    <span class="author-link icon-link"><a href="http://www.mimiz.fr">http://www.mimiz.fr</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20use%20events%20in%20Node.js&amp;url=https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://mimiz.github.io">Remi Goyard</a> &copy; 2016</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js?v="></script> 
+      <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+          });
+        });
+
+        hljs.initHighlightingOnLoad();
+      </script>
+
+    <script type="text/javascript" src="//mimiz.github.io/themes/casper/assets/js/jquery.fitvids.js?v=1480314632325"></script>
+    <script type="text/javascript" src="//mimiz.github.io/themes/casper/assets/js/index.js?v=1480314632325"></script>
+
+</body>
+</html>
