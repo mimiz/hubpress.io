@@ -1,0 +1,150 @@
+= How to work with events in Node.js
+Doc Writer <http://www.mimiz.fr>
+
+In this blog post I will explain how to create and use Events in Node.Js
+The main purpose is to demonstrate the following :
+
+I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done.
+Then I would like other modules (such as b module) to be able to subscribe to those operations.
+
+In order to solve this I will create an EventManager object based on node events.
+
+Create the files :
+
+[source, javascript]
+.a.js
+----
+var operations = {
+  add:function(){
+    // operation for add
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;
+----
+
+[source, javascript]
+.b.js
+----
+var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+  }
+}
+module.exports = b;
+----
+
+So the purpose is more than simple, when `a.add` is called, we want the function `b.someCodeWhenAddInA` to be called, and we also want to easylly add the ability to add modules that will execute code on `a.add` called.
+
+Let's create the `EventManager`.
+
+[source, javascript]
+.EventManager.js
+----
+var util         = require("util");
+var EventEmitter = require("events").EventEmitter;
+function EventManager(){
+    EventEmitter.call(this);
+}
+
+util.inherits(EventManager, EventEmitter);
+
+module.exports = new EventManager();
+----
+
+NOTE: refer to the documentation to know more about https://nodejs.org/api/events.html[node js events]
+
+Edit the code in `a` and `b` modules :
+
+
+[source, javascript]
+.a.js
+----
+var EventManager = require('./EventManager');
+var operations = {
+  add:function(){
+    // operation for add
+    EventManager.emit('addedToA');
+  },
+  remove:function(){
+    // operation for remove
+  },
+  update:function(){
+    // operation for update
+  }
+}
+module.exports = operations;
+----
+
+
+
+[source, javascript]
+.b.js
+----
+var EventManager = require('./EventManager');
+var b = {
+  someCodeWhenAddInA:function(){
+    // this function should be executed after a.add is executed
+    console.log('someCodeWhenAddInA has been executed in b');
+  }
+}
+EventManager.on('addedToA', b.someCodeWhenAddInA);
+module.exports = b;
+----
+
+And now let's simply create a runner file to try our code
+
+[source, javascript]
+.main.js
+----
+var a = require('./a');
+var b = require('./b');
+
+a.add();
+----
+
+This should print *_someCodeWhenAddInA has been executed in b_* in the console.
+
+And that's all !
+
+Now if you want to create a `c` module which will listen to the same event, it's easy, and no need to edit the `a` module anymore :
+
+[source, javascript]
+.c.js
+----
+var EventManager = require('./EventManager');
+var c = {
+  anotherFonction:function(){
+    // this function should be executed after a.add is executed
+    console.log('anotherFonction has been executed in c');
+  }
+}
+EventManager.on('addedToA', c.anotherFonction);
+module.exports = b;
+----
+
+[source, javascript]
+.main.js
+----
+var a = require('./a');
+var b = require('./b'); <1>
+var c = require('./c'); <2>
+
+a.add();
+----
+
+This will print :
+
+----
+someCodeWhenAddInA has been executed in b
+anotherFonction has been executed in c
+----
+
+NOTE: If you inverse the *1* and *2* the log will also be impacted.
+
+Here we are, comments are appreciated
