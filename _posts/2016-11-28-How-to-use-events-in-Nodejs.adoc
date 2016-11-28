@@ -1,4 +1,4 @@
-= How to work with events in Node.js
+= How to use events in Node.js
 Doc Writer <http://www.mimiz.fr>
 
 In this blog post I will explain how to create and use Events in Node.Js
