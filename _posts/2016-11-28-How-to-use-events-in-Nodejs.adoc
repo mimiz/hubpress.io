@@ -1,5 +1,6 @@
 = How to use events in Node.js
 Doc Writer <http://www.mimiz.fr>
+:hp-tags: Node.js, Events
 
 In this blog post I will explain how to create and use Events in Node.Js
 The main purpose is to demonstrate the following :
