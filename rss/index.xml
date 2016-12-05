@@ -1,4 +1,412 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 05 Dec 2016 04:17:14 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 05 Dec 2016 05:09:58 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently, on a project I had to document an API using <a href="http://swagger.io/">Swagger</a>, as an authentication mechanism, the API, is using JWT.</p>
+</div>
+<div class="paragraph">
+<p>The Token needs to be set in the <code>Authorization</code> Header of the HTTP request as this :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>Authorization Bearer: JWT-token</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As we wanted to use the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> to allow clients to test requests and responses of the API.</p>
+</div>
+<div class="paragraph">
+<p>To define the API, we use  the <a href="http://swagger.io/swagger-editor/">Swagger Editor</a> Online.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_start_the_documentation_and_the_login_route">Start the Documentation and the /login route</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First we need to create the main API description :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
+info:
+ version: 0.0.1
+ title: MY-SUPERB-API
+host: '127.0.0.1:4000'
+schemes:
+ - http
+ - https
+produces:
+ - application/json
+paths:
+ /login:
+  post:
+   tags:
+    - auth
+   description: |
+    Allow users to log in, and to receive a Token
+   parameters:
+    -
+     in: body
+     name: body
+     description: The email/password
+     required: true
+     schema:
+      $ref: '#/definitions/Login'
+   responses:
+    '200':
+     description: Login Success
+     schema:
+      $ref: '#/definitions/Token'
+    '400':
+     description: Whether the user is not found or error while login
+     schema:
+      $ref: '#/definitions/Error'
+    '403':
+     description: &gt;-
+      If user is not found (bad credentials) OR if user can not login (a
+      concierge of an unsctive client)
+     schema:
+      $ref: '#/definitions/Error'
+definitions:
+ Login:
+  type: object
+  properties:
+   email:
+    type: string
+   password:
+    type: string
+ Token:
+  type: object
+  properties:
+   token:
+    type: string
+ Error:
+  type: object
+  properties:
+   message:
+    type: string
+   error:
+    type: string</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will define the <code>/login</code> route that receive a <code>POST</code> HTTP request with email and password, if they matches your credential provider the route will return a <code>Token</code> response :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{
+  "token":"JWT TOKEN"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_describe_the_security_definition">Describe the Security Definition</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now we should define create a <strong>securityDefinitions</strong>, this will describe how authorization is made, and allow the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> to ask for a token when needed.</p>
+</div>
+<div class="paragraph">
+<p>So first edit the API definition :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
+info:
+ version: 0.0.1
+ title: MY-SUPERB-API
+host: '127.0.0.1:4000'
+schemes:
+ - http
+ - https
+produces:
+ - application/json
+securityDefinitions: <i class="conum" data-value="1"></i><b>(1)</b>
+ Bearer:
+  description: |
+   For accessing the API a valid JWT token must be passed in all the queries in
+   the 'Authorization' header.
+
+
+   A valid JWT token is generated by the API and retourned as answer of a call
+   to the route /login giving a valid user &amp; password.
+
+
+   The following syntax must be used in the 'Authorization' header :
+
+       Bearer: xxxxxx.yyyyyyy.zzzzzz
+  type: apiKey
+  name: Authorization
+  in: header
+paths:
+ /login:
+  post:
+   tags:
+    - auth
+   description: |
+    Allow users to log in, and to receive a Token
+   parameters:
+    -
+     in: body
+     name: body
+     description: The email/password
+     required: true
+     schema:
+      $ref: '#/definitions/Login'
+   responses:
+    '200':
+     description: Login Success
+     schema:
+      $ref: '#/definitions/Token'
+    '400':
+     description: Whether the user is not found or error while login
+     schema:
+      $ref: '#/definitions/Error'
+    '403':
+     description: &gt;-
+      If user is not found (bad credentials) OR if user can not login (a
+      concierge of an unsctive client)
+     schema:
+      $ref: '#/definitions/Error'
+definitions:
+ Login:
+  type: object
+  properties:
+   email:
+    type: string
+   password:
+    type: string
+ Token:
+  type: object
+  properties:
+   token:
+    type: string
+ Error:
+  type: object
+  properties:
+   message:
+    type: string
+   error:
+    type: string</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ajout de la clé <strong>securityDefinitions</strong></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The description is, I think, self described, so you can understand it</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_a_protected_route">Create a protected route</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>And now you can define a route <code>/users</code> for example that needs the user to send a valid Authorization header  &#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
+info:
+ version: 0.0.1
+ title: MY-SUPERB-API
+host: '127.0.0.1:4000'
+schemes:
+ - http
+ - https
+produces:
+ - application/json
+securityDefinitions:
+ Bearer:
+  description: |
+   For accessing the API a valid JWT token must be passed in all the queries in
+   the 'Authorization' header.
+
+
+   A valid JWT token is generated by the API and retourned as answer of a call
+   to the route /login giving a valid user &amp; password.
+
+
+   The following syntax must be used in the 'Authorization' header :
+
+       Bearer: xxxxxx.yyyyyyy.zzzzzz
+  type: apiKey
+  name: Authorization
+  in: header
+paths:
+ /login:
+  post:
+   tags:
+    - auth
+   description: |
+    Allow users to log in, and to receive a Token
+   parameters:
+    -
+     in: body
+     name: body
+     description: The email/password
+     required: true
+     schema:
+      $ref: '#/definitions/Login'
+   responses:
+    '200':
+     description: Login Success
+     schema:
+      $ref: '#/definitions/Token'
+    '400':
+     description: Whether the user is not found or error while login
+     schema:
+      $ref: '#/definitions/Error'
+    '403':
+     description: &gt;-
+      If user is not found (bad credentials) OR if user can not login (a
+      concierge of an unsctive client)
+     schema:
+      $ref: '#/definitions/Error'
+ /users:
+  get:
+   tags:
+    - users
+   security:
+    - Bearer: []
+   description: Get a list of all existing users
+   responses:
+    '200':
+     description: An array of users
+     schema:
+      type: array
+      items:
+       $ref: '#/definitions/User'
+definitions:
+ Login:
+  type: object
+  properties:
+   email:
+    type: string
+   password:
+    type: string
+ Token:
+  type: object
+  properties:
+   token:
+    type: string
+ Error:
+  type: object
+  properties:
+   message:
+    type: string
+   error:
+    type: string
+ User:
+    type: object
+    properties:
+     email:
+      type: string
+     password:
+      type: string
+     firstName:
+      type: string
+     lastName:
+      type: string
+     lastLogin:
+      type: string
+      format: date</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you just described that the <code>/users</code> route need the Bearer authentication &#8230;&#8203;</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_use_swagger_ui">Use Swagger UI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to use the Swagger UI, you should be aware that the <strong>host</strong> value is defined on <em>'127.0.0.1:4000'</em> and this may be changed in your case !</p>
+</div>
+<div class="sect2">
+<h3 id="_first_login_and_get_the_token">First Login and get the token</h3>
+<div class="paragraph">
+<p>The now you can use the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> (with the editor) to login :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-1.png" alt="swagger auth 1.png">
+</div>
+</div>
+<div class="paragraph">
+<p>And the response should be :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-2.png" alt="swagger auth 2.png">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authenticate_the_editor">Authenticate the editor :</h3>
+<div class="paragraph">
+<p>Now at the top of the generated documentation you can click the <strong>Authenticate</strong> Button :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-3.png" alt="swagger auth 3.png">
+</div>
+</div>
+<div class="paragraph">
+<p>Then fill with the Token you received at the previous step :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-4.png" alt="swagger auth 4.png">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We are spcifying the <strong>Bearer:</strong> keyword.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_try_the_protected_route">Try the protected route</h3>
+<div class="paragraph">
+<p>Now in the section of the protected route : <code>/users</code> you can check the <em>Bearer</em> checkbox and try the operation :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-5.png" alt="swagger auth 5.png">
+</div>
+</div>
+<div class="paragraph">
+<p>You should have a valid answer :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://mimiz.github.io/images/swagger-auth-6.png" alt="swagger auth 6.png">
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can add your other routes to finish defined your API.</p>
+</div>
+<div class="paragraph">
+<p>Have fun !</p>
+</div>
+</div>
+</div>
+</div>]]></description><link>https://mimiz.github.io/2016/12/05/Use-Authorization-Header-with-Swagger.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/12/05/Use-Authorization-Header-with-Swagger.html</guid><category><![CDATA[Swagger]]></category><category><![CDATA[ Authorization]]></category><category><![CDATA[ Bearer]]></category><category><![CDATA[ API]]></category><category><![CDATA[ Express]]></category><category><![CDATA[ JWT]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 05 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
 <p>In this blog post I will explain how to create and use Events in Node.Js
 The main purpose is to demonstrate the following :</p>
 </div>
