@@ -1,0 +1,3 @@
+= Use Authorization Header with Swagger
+
+Recently, on a project I had to document an API using http://swagger.io/[Swagger] 
