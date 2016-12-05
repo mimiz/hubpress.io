@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 28 Nov 2016 06:41:31 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 05 Dec 2016 04:17:14 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
 <p>In this blog post I will explain how to create and use Events in Node.Js
 The main purpose is to demonstrate the following :</p>
 </div>
@@ -176,4 +176,4 @@ If you inverse the <strong>1</strong> and <strong>2</strong> the log will also b
 </div>
 <div class="paragraph">
 <p>Here we are, comments are appreciated</p>
-</div>]]></description><link>https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</guid><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
+</div>]]></description><link>https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</guid><category><![CDATA[Node.js]]></category><category><![CDATA[ Events]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
