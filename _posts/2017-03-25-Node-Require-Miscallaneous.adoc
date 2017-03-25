@@ -1,0 +1,115 @@
+= Node Require Miscallaneous ...
+
+Yesterday, I worked on a project and I discovered something about `require` in Node.Js.
+
+== The situation ...
+
+Imagine we have some datas in a Json file we want to access in different modules.
+
+[source, json]
+.datas.json
+----
+{
+  "version":"0.1",
+  "name":"MyApplication"
+}
+----
+
+This `datas.json` is quite short, but for explaining the situation it is more than enough !
+
+Now the code : 
+
+[source, js]
+.index.js
+----
+var module1 = require('./module1.js'),
+    module2 = require('./module2.js');
+
+module1.log();
+module2.log();
+----
+
+
+
+[source, js]
+.module1.js
+----
+var myDatas = require('./datas.json');
+
+module.exports = {
+  log:function(){
+    console.log(myDatas);
+  }
+}
+----
+
+
+[source, js]
+.module2.js
+----
+var myDatas = require('./datas.json');
+
+module.exports = {
+  log:function(){
+    console.log(myDatas);
+  }
+}
+----
+
+As you can see, `module1` and `module2` are exactly same.
+
+So if we execute the code, we will have the following output : 
+
+[source, zsh]
+.output 1
+----
+⇒  node index.js
+{ version: 'O.1', name: 'MyApplication' }
+{ version: 'O.1', name: 'MyApplication' }
+----
+
+Ok, now imagine `module1` will modify some value before logging : 
+
+[source, js]
+.module1.js (version 2)
+----
+var myDatas = require('./datas.json');
+
+module.exports = {
+  log:function(){
+    lowerCaseName() <1>
+    console.log(myDatas);
+  }
+}
+
+function lowerCaseName(){
+  myDatas.name = myDatas.name.toLowerCase();
+}
+----
+<1> We just add this simple function that will lowerCase the name.
+
+In my idea, this should not affect the `module2` as they should be independant, so when I execute the code, here is the output : 
+
+[source, zsh]
+.output 1
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'myapplication' }<1>
+----
+<1> Damned ! 
+
+== Why 
+
+Actually the reason is quite simple, when you require the file `datas.json`, require will create the object and store it in the `require.cache` object, then next time you use `require('./datas.json')` to retreive the datas, require will return you the value in that `require.cache` object.
+
+So it mean that it gives you the reference to the value, so if you change one property of that value, all other modules are affected as you are actually doing the change on the reference in the cache.
+
+.This is quite well documented in the Node.js documentation : 
+[quote, Node.Js Documentation, https://nodejs.org/api/modules.html#modules_caching]
+____
+Modules are cached after the first time they are loaded. This means (among other things) that every call to require('foo') will get exactly the same object returned, if it would resolve to the same file.
+____
+
+== How to have the desired behaviour
+
