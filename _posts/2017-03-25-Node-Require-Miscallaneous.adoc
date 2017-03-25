@@ -1,6 +1,6 @@
 = Node Require Miscallaneous ...
 
-Yesterday, I worked on a project and I discovered something about `require` in Node.Js.
+So times ago (I don't really remember when), working on a Node.Js project, I realised something about `require`.
 
 == The situation ...
 
@@ -91,7 +91,7 @@ function lowerCaseName(){
 In my idea, this should not affect the `module2` as they should be independant, so when I execute the code, here is the output : 
 
 [source, zsh]
-.output 1
+.output 2
 ----
 ⇒  node index.js
 { version: 'O.1', name: 'myapplication' }
@@ -112,4 +112,54 @@ Modules are cached after the first time they are loaded. This means (among other
 ____
 
 == How to have the desired behaviour
+
+So now, how can we do to be able to edit values without changing affecting other modules.
+
+=== The _Const_ way ... fail
+
+First I wanted to use the new ES6 `const` instead of `var` in the line 
+
+[source, js]
+----
+// replace 
+var myDatas = require('./datas.json');
+// with 
+const myDatas = require('./datas.json');
+----
+
+But actually, `const` do not prevent the variable to be modified, but prevent reafectation, so [red big]#this can not work#
+
+[source, zsh]
+.output 3
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'myapplication' }<1>
+----
+<1> Damned ! 
+
+
+=== The _delete_ way ... success
+
+With this solution, you will `delete` the reference in the `require.cache` object before require the `datas.json` file like this : 
+
+[source, js]
+----
+delete require.cache[require.resolve('./datas.json')];
+var myDatas = require('./datas.json');
+// Code continue ...
+----
+
+As you may not know how your modules are inserted, you need to add the line on every files that need to use the `datas.json` file.
+
+In my opinion, this is not very convenient, but it works : 
+
+[source, zsh]
+.output 4
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'MyApplication' } <1>
+----
+<1> Great !
 
