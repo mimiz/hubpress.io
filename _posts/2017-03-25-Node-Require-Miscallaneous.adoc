@@ -263,9 +263,87 @@ I think both solution can be justified, you just need to make a choice.
 
 This solution is the solution I considered previously.
 
-So with this solution, the _"Proxy"_ (or you can call it, the _"wrapper"_) will create the copy 
+So with this solution, the _"Proxy"_ (or you can call it, the _"wrapper"_) will create the copy and returns it to the modules : 
+
+So edit the Proxy code, and the modules : 
+
+[source, js]
+.datasProxy.js
+----
+var datas = require('./datas.json');
+
+module.exports = function(){ <1>
+  return clone(datas);
+}
+
+function clone(datas){
+  return JSON.parse(JSON.stringify(datas)); <2>
+}
+----
+<1> We export a function that need to be called in module to return a copy of the datas
+<2> Here we use a hack to clone _"deeply"_ an object.
+
+Then edit the modules to call the exported function 
+ 
+[source, js]
+.module1.js
+----
+var myDatas = require('./datasProxy')(); <1>
+
+module.exports = {
+  log:function(){
+    lowerCaseName()
+    console.log(myDatas);
+  }
+}
+
+function lowerCaseName(){
+  myDatas.name = myDatas.name.toLowerCase();
+}
+----
+<1> Call the function to get the copy.
+
+[source, js]
+.module2.js
+----
+var myDatas = require('./datasProxy')(); <1>
+
+module.exports = {
+  log:function(){
+    console.log(myDatas);
+  }
+}
+----
+<1> Call the function to get the copy.
+
+Then execute the code : 
+
+[source, zsh]
+.output 7
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'MyApplication' }
+----
+
+Great it works ! 
+
+This is one of my prefered solution.
+
+
 === The _ServiceLocator_ Way ... 
-Create a service around the datas.
+
+With this solution, we will use an object (a kind of registry) that will expose (at least) two methods `get` and `set` and will be inserted in every module to retreive the datas.
+
+As code speak louders, let's write this object : 
+
+
 
 === The _import_ Way
 
+
+
+== Let's talk about unit testing
+
+
+== Conclusion
