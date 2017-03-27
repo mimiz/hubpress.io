@@ -167,10 +167,104 @@ I Think that this solution is the *_"Quick And Dirty"_* solution.
 
 === The _Proxy_ Way ...
 
+With this solution I imagine to create a `Proxy` around the json datas, and override the `set` method, in order to forbid the manipulation of the value.
+
+This approach can be usefull to throw excpetion if someone try to set the property value.
+
+Here is the code : 
+
+[source, js]
+.datasProxy.js
+----
+var datas = require('./datas.json'); <1>
+
+module.exports = new Proxy(datas, {
+  set:function(){ 
+    return; <2>
+  }
+});
+----
+<1> This should be the only location in the app where you require the json file.
+<2> Here, we just do nothing, but we could throw exception here to reject any modification of any properties.
+
+We also need to change the reference in `module1` and `module2` :
+[source, js]
+----
+// Replace
+var myDatas = require('./datas.json');
+// with
+var myDatas = require('./datasProxy');
+----
+
+
+Can you see a big problem ? 
+
+YES, the code in `module1` should be updated because now we can not set the property (even locally)
+
+Let's first execute the code without any modification :
+
+[source, zsh]
+.output 5
+----
+⇒  node index.js
+{ version: 'O.1', name: 'MyApplication' }
+{ version: 'O.1', name: 'MyApplication' }
+----
+
+So there is a problem, the first line should display the text MyApplciation in lowercase.
+So let's edit the code in `module1` to have the desired behaviour.
+
+Here is a working code : 
+
+[source, js]
+.module1.js
+----
+var myDatas = Object.assign({}, require('./datasProxy')); <1>
+
+module.exports = {
+  log:function(){
+    lowerCaseName()
+    console.log(myDatas);
+  }
+}
+
+function lowerCaseName(){
+  myDatas.name = myDatas.name.toLowerCase();
+}
+----
+<1> We use `Object.assign()` to create a _"copy"_ of the object in the `module1`
+
+If we look at the output : 
+
+[source, zsh]
+.output 6
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'MyApplication' }
+----
+
+So it works ! 
+
+But, as the MDN web site says:
+
+[quote, Mozilla Developper Network, http://devdocs.io/javascript/global_objects/object/assign]
+____
+"The `Object.assign()` method only copies enumerable and own properties from a source object to a target object."
+____
+Maybe you should use a "clone" function that allow to clone objects deeply (check this with lodash https://lodash.com/docs/4.17.4#clone[`_.clone()`] for example)
+
+I think this solution is not too bad, but the thing is that you delegate to the module the need to create a copy, maybe this suits your needs, or maybe we can do it in the proxy itself.
+
+I think both solution can be justified, you just need to make a choice.
+
+
 === The _Clone_ Way  ...
 
-Clone everything
-=== The _Wrapper_ Way ... 
+This solution is the solution I considered previously.
+
+So with this solution, the _"Proxy"_ (or you can call it, the _"wrapper"_) will create the copy 
+=== The _ServiceLocator_ Way ... 
 Create a service around the datas.
 
 === The _import_ Way
