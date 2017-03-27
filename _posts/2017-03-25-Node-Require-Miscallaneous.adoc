@@ -163,3 +163,15 @@ In my opinion, this is not very convenient, but it works :
 ----
 <1> Great !
 
+I Think that this solution is the *_"Quick And Dirty"_* solution.
+
+=== The _Proxy_ Way ...
+
+=== The _Clone_ Way  ...
+
+Clone everything
+=== The _Wrapper_ Way ... 
+Create a service around the datas.
+
+=== The _import_ Way
+
