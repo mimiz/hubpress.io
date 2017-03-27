@@ -17,5 +17,21 @@
   },
   "theme": {
     "name": "roon"
+  },
+  "urls": {
+    "site": "https://mimiz.github.io",
+    "hubpress": "https://mimiz.github.io",
+    "theme": "//mimiz.github.io/themes/roon",
+    "images": "https://mimiz.github.io/images"
+  },
+  "initialisationConfigComponent": {
+    "name": "initialise-configuration",
+    "computed": {},
+    "methods": {},
+    "staticRenderFns": [
+      null,
+      null,
+      null
+    ]
   }
 }
