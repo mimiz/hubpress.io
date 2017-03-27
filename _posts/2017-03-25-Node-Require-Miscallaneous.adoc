@@ -111,6 +111,13 @@ ____
 Modules are cached after the first time they are loaded. This means (among other things) that every call to require('foo') will get exactly the same object returned, if it would resolve to the same file.
 ____
 
+
+[IMPORTANT]
+----
+Remember that Node.Js is single thread, it mean for example that the require cache is shared accross all requests
+----
+
+
 == How to have the desired behaviour
 
 So now, how can we do to be able to edit values without changing affecting other modules.
@@ -339,8 +346,15 @@ As code speak louders, let's write this object :
 
 
 
-=== The _import_ Way
+=== The _import_ Way (aka. the _ES6_ way
 
+First I need to say that I first did not considered this solution, this solution was given to me by Jéremy  Morin  (a co-worker).
+
+As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, we will need to _"babelize"_ (transpile with babel) the code, and for that we need to refactor our code, and initilaze a npm project.
+
+1. First create a `src` doirectory and copy all files inside that directory
+2. In a terminal window run the `npm init` command and answer all question
+3. Then install the `babel-cli` dependency
 
 
 == Let's talk about unit testing
