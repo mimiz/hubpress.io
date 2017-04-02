@@ -342,11 +342,13 @@ This is one of my prefered solution.
 
 With this solution, we will use an object (a kind of registry) that will expose (at least) two methods `get` and `set` and will be inserted in every module to retreive the datas.
 
+This is a way of https://en.wikipedia.org/wiki/Inversion_of_control[_"Inversion Of Control"_] 
+
 As code speak louders, let's write this object : 
 
 
 
-=== The _import_ Way (aka. the _ES6_ way
+=== The _import_ Way (aka. the _ES6_ way)
 
 First I need to say that I first did not considered this solution, this solution was given to me by Jéremy  Morin  (a co-worker).
 
@@ -355,6 +357,15 @@ As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, w
 1. First create a `src` doirectory and copy all files inside that directory
 2. In a terminal window run the `npm init` command and answer all question
 3. Then install the `babel-cli` dependency
+4. Create a _"build"_ script
+4. Edit the Code to convert it to ES6
+5. Build
+6. Test
+
+==> It does not fix the _cacche_ 
+
+
+=== The _decache_ way
 
 
 == Let's talk about unit testing
