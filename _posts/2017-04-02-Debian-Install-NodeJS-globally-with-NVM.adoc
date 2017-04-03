@@ -1,0 +1,98 @@
+= Debian Install Node.JS globally with NVM
+// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+// :hp-image: /covers/cover.png
+// :published_at: 2019-01-31
+// :hp-tags: HubPress, Blog, Open_Source,
+// :hp-alt-title: My English Title
+
+Recently I had to install Node.JS on a server and allow all users to be able to use it. 
+As I like the nvm concept to be able to easily install Node.Js, I would like to be able to install Node via NVM, and make Node.Js available for all users. I do not want users to be able to install their own version of Node.JS, and I want to control the Node.js global packages on that computer.
+
+So we will do the following 
+
+== Install some usefull packages
+
+[source, bash]
+.Run as root
+----
+apt-get install git vim curl build-essential sudo
+----
+
+== Install nvm as "root" / superuser
+
+First you need to clone the nvm repository : 
+
+[source, bash]
+.clone nvm
+----
+git clone https://github.com/creationix/nvm.git /opt/nvm
+----
+
+The edit the `~/.bashrc` and add the following line to the file : 
+
+[source, bash]
+.~/.bashrc
+----
+export NVM_DIR=/usr/local/nvm
+source /opt/nvm/nvm.sh
+----
+
+Then logout and login again, or type `source ~/.bashrc` to enable nvm
+
+Try nvm : 
+
+[source, bash]
+.try nvm
+----
+nvm install 6.10.1
+----
+
+Now _nvm_ is installed for root, but not all users.
+
+To activate the node installation for users, we will add the script `/etc/profile.d/nvm.sh` : 
+
+[source, bash]
+./etc/profile.d/nvm.sh
+----
+#!/bin/bash
+VERSION=`cat /usr/local/nvm/alias/default`
+export PATH="/usr/local/nvm/versions/node/v$VERSION/bin:$PATH"
+----
+
+Then make that file runnable : `chmod +x /etc/profile.d/nvm.sh`
+
+
+=== As user
+
+Now connect as a user, and try to use node : 
+
+[source, bash]
+.try node
+----
+node -v
+----
+
+You should see the node version installed before (6.10.1)
+
+Then try to install a new version of  node : 
+
+[source, bash]
+.try node
+----
+nvm install 7.8.0
+----
+
+Result should be `nvm : commande introuvable` 
+
+=== Install some global packages
+
+With node you may want to install some package globbaly (`forever` for example), and I think we should not allow users to install what they want so we may install global packages as root also.
+
+As root run  the command `npm install -g nodemon` for example, then login as a user, and run `nodemon index.js` and it works.
+
+So all global package should be installed as root (or other superuser).
+
+
+
+
+
