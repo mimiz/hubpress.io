@@ -28,6 +28,14 @@ First you need to clone the nvm repository :
 git clone https://github.com/creationix/nvm.git /opt/nvm
 ----
 
+Then create the directory `/usr/local/nvm`
+
+[source, bash]
+.create diretory
+----
+mkdir /usr/local/nvm
+----
+
 The edit the `~/.bashrc` and add the following line to the file : 
 
 [source, bash]
