@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 03 Apr 2017 13:59:10 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 04 Apr 2017 12:58:07 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recently I had to install Node.JS on a server and allow all users to be able to use it.
@@ -30,6 +30,15 @@ As I like the nvm concept to be able to easily install Node.Js, I would like to 
 <div class="title">clone nvm</div>
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">git clone https://github.com/creationix/nvm.git /opt/nvm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create the directory <code>/usr/local/nvm</code></p>
+</div>
+<div class="listingblock">
+<div class="title">create diretory</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">mkdir /usr/local/nvm</code></pre>
 </div>
 </div>
 <div class="paragraph">
