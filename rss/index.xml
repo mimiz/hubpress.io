@@ -1,4 +1,126 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 04 Apr 2017 12:58:28 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 04 Apr 2017 12:58:31 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently I had to install Node.JS on a server and allow all users to be able to use it.
+As I like the nvm concept to be able to easily install Node.Js, I would like to be able to install Node via NVM, and make Node.Js available for all users. I do not want users to be able to install their own version of Node.JS, and I want to control the Node.js global packages on that computer.</p>
+</div>
+<div class="paragraph">
+<p>So we will do the following</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_install_some_usefull_packages">Install some usefull packages</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Run as root</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">apt-get install git vim curl build-essential sudo</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_install_nvm_as_root_superuser">Install nvm as "root" / superuser</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First you need to clone the nvm repository :</p>
+</div>
+<div class="listingblock">
+<div class="title">clone nvm</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git clone https://github.com/creationix/nvm.git /opt/nvm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create the directory <code>/usr/local/nvm</code></p>
+</div>
+<div class="listingblock">
+<div class="title">create diretory</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">mkdir /usr/local/nvm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The edit the <code>~/.bashrc</code> and add the following line to the file :</p>
+</div>
+<div class="listingblock">
+<div class="title">~/.bashrc</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">export NVM_DIR=/usr/local/nvm
+source /opt/nvm/nvm.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then logout and login again, or type <code>source ~/.bashrc</code> to enable nvm</p>
+</div>
+<div class="paragraph">
+<p>Try nvm :</p>
+</div>
+<div class="listingblock">
+<div class="title">try nvm</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">nvm install 6.10.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now <em>nvm</em> is installed for root, but not all users.</p>
+</div>
+<div class="paragraph">
+<p>To activate the node installation for users, we will add the script <code>/etc/profile.d/nvm.sh</code> :</p>
+</div>
+<div class="listingblock">
+<div class="title">/etc/profile.d/nvm.sh</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">#!/bin/bash
+VERSION=`cat /usr/local/nvm/alias/default`
+export PATH="/usr/local/nvm/versions/node/v$VERSION/bin:$PATH"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then make that file runnable : <code>chmod +x /etc/profile.d/nvm.sh</code></p>
+</div>
+<div class="sect2">
+<h3 id="_as_user">As user</h3>
+<div class="paragraph">
+<p>Now connect as a user, and try to use node :</p>
+</div>
+<div class="listingblock">
+<div class="title">try node</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">node -v</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the node version installed before (6.10.1)</p>
+</div>
+<div class="paragraph">
+<p>Then try to install a new version of  node :</p>
+</div>
+<div class="listingblock">
+<div class="title">try node</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">nvm install 7.8.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Result should be <code>nvm : commande introuvable</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_install_some_global_packages">Install some global packages</h3>
+<div class="paragraph">
+<p>With node you may want to install some package globbaly (<code>forever</code> for example), and I think we should not allow users to install what they want so we may install global packages as root also.</p>
+</div>
+<div class="paragraph">
+<p>As root run  the command <code>npm install -g nodemon</code> for example, then login as a user, and run <code>nodemon index.js</code> and it works.</p>
+</div>
+<div class="paragraph">
+<p>So all global package should be installed as root (or other superuser).</p>
+</div>
+</div>
+</div>
+</div>]]></description><link>https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</guid><category><![CDATA[node.js]]></category><category><![CDATA[nvm]]></category><category><![CDATA[installation]]></category><category><![CDATA[debian]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sun, 02 Apr 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recently, on a project I had to document an API using <a href="http://swagger.io/">Swagger</a>, as an authentication mechanism, the API, is using JWT.</p>
