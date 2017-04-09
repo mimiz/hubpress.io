@@ -158,6 +158,7 @@ But actually, `const` do not prevent the variable to be modified, but prevent re
 With this solution, you will `delete` the reference in the `require.cache` object before require the `datas.json` file like this : 
 
 [source, js]
+.module2.js
 ----
 delete require.cache[require.resolve('./datas.json')];
 var myDatas = require('./datas.json');
@@ -370,6 +371,65 @@ npm install decache --save
 <1> This is not necessary if you already initialise a node project.
 
 Then edit the code : 
+
+[source, js]
+.index.js
+----
+var module1 = require('./module1.js'),
+    module2 = require('./module2.js');
+
+module1.log();
+module2.log();
+----
+
+[source, js]
+.module1.js
+----
+var myDatas = require('./datas.json');
+
+module.exports = {
+  log:function(){
+    lowerCaseName()
+    console.log(myDatas);
+  }
+}
+
+function lowerCaseName(){
+  myDatas.name = myDatas.name.toLowerCase();
+}
+----
+
+
+[source, js]
+.module2.js
+----
+var decache = require('decache'); <1>
+decache('./datas.json'); <2>
+var myDatas = require('./datas.json');
+
+module.exports = {
+    log: function() {
+        console.log(myDatas);
+    }
+}
+----
+<1> First we need to require the _decache_ module
+<2> Then we use _decache_ to remove the datas.json file from the cache
+
+NOTE: Maybe we should use _decache_ from both `module1.js` and `module2.js` because if we invert the the two _require_ lines in the `index.js` file the cache is not removed as we expect.
+
+[source, zsh]
+.output 7
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'MyApplication' }
+----
+
+It works ! 
+
+[green big]*SUCCESS*
+
 === The _import_ Way (aka. the _ES6_ way) ... FAIL
 
 This idea was given to me by https://jermor.in/[Jérémy  Morin].
