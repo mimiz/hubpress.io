@@ -125,7 +125,7 @@ Now I will try to make the code work as desired.
 Some of the solutions are not solving the problem, but I wanted to try to see how it works ...
 
 
-=== The _Const_ way ... fail
+=== The _Const_ way ... FAIL
 
 First I wanted to use the new ES6 `const` instead of `var` in the line 
 
@@ -153,7 +153,7 @@ But actually, `const` do not prevent the variable to be modified, but prevent re
 [red big]#FAIL# 
 
 
-=== The _delete_ way ... success
+=== The _delete_ way ... SUCCESS
 
 With this solution, you will `delete` the reference in the `require.cache` object before require the `datas.json` file like this : 
 
@@ -181,7 +181,7 @@ I Think that this solution is the *_"Quick And Dirty"_* solution.
 
 [green big]*SUCCESS*
 
-=== The _Proxy_ Way ...
+=== The _Proxy_ Way ... SUCCESS
 
 With this solution I imagine to create a `Proxy` around the json datas, and override the `set` method, in order to forbid the manipulation of the value.
 
@@ -276,7 +276,7 @@ I think both solution can be justified, you just need to make a choice.
 [green big]*SUCCESS*
 
 
-=== The _Clone_ Way  ...
+=== The _Clone_ Way  ... SUCCESS
 
 This solution is the solution I considered previously.
 
@@ -350,9 +350,29 @@ This is my favorite solution.
 [green big]*SUCCESS*
 
 
-=== The _import_ Way (aka. the _ES6_ way)
 
-First I need to say that I first did not considered this solution, this solution was given to me by https://jermor.in/[Jérémy  Morin]  (a co-worker).
+
+=== The _decache_ way ... SUCCESS
+
+This idea was given to me by https://jermor.in/[Jérémy  Morin].
+
+https://www.npmjs.com/package/decache[Decache] is a Node Module, that remove module from the `require` cache.
+
+This solution has exactly the same effect than the _delete_ solution I present before. But it make it easier to do.
+
+First you need to install the `decache` node module : 
+
+[source, bash]
+----
+npm init <1>
+npm install decache --save
+----
+<1> This is not necessary if you already initialise a node project.
+
+Then edit the code : 
+=== The _import_ Way (aka. the _ES6_ way) ... FAIL
+
+This idea was given to me by https://jermor.in/[Jérémy  Morin].
 
 As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, we will need to _"babelize"_ (transpile with babel) the code, and for that we need to refactor our code, and initilaze a npm project.
 
@@ -366,11 +386,6 @@ As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, w
 
 ==> It does not fix the _cacche_ 
 
-
-=== The _decache_ way
-
-
-== Let's talk about unit testing
 
 
 == Conclusion
