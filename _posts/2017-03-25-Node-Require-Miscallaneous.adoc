@@ -153,6 +153,7 @@ const myDatas = require('./datas.json');
 But actually, `const` do not prevent the variable to be modified, but prevent reafectation.
 
 [red big]#FAIL#
+
 https://github.com/mimiz/node_require_cache/tree/const_way[Source Code, branch const_way]
 
 === The _delete_ way ... SUCCESS
