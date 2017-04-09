@@ -435,6 +435,8 @@ It works !
 
 [green big]*SUCCESS*
 
+https://github.com/mimiz/node_require_cache/tree/decache_way[Source code, branch decache_way]
+
 === The _import_ Way (aka. the _ES6_ way) ... FAIL
 
 This idea was also given to me by https://jermor.in/[Jérémy  Morin].
