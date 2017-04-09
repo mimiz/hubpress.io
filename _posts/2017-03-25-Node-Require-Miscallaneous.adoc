@@ -153,7 +153,7 @@ const myDatas = require('./datas.json');
 But actually, `const` do not prevent the variable to be modified, but prevent reafectation.
 
 [red big]#FAIL#
-
+https://github.com/mimiz/node_require_cache/tree/const_way[Source Code, branch const_way]
 
 === The _delete_ way ... SUCCESS
 
@@ -183,6 +183,8 @@ In my opinion, this is not very convenient, but it works :
 I Think that this solution is the *_"Quick And Dirty"_* solution.
 
 [green big]*SUCCESS*
+
+https://github.com/mimiz/node_require_cache/tree/delete_way[Source Code, branch delete_way]
 
 === The _Proxy_ Way ... SUCCESS
 
@@ -278,6 +280,7 @@ I think both solution can be justified, you just need to make a choice.
 
 [green big]*SUCCESS*
 
+https://github.com/mimiz/node_require_cache/tree/proxy_way[Source Code, branch proxy_way]
 
 === The _Clone_ Way  ... SUCCESS
 
@@ -352,7 +355,7 @@ This is my favorite solution.
 
 [green big]*SUCCESS*
 
-
+https://github.com/mimiz/node_require_cache/tree/clone_way[Source Code, branch clone_way]
 
 
 === The _decache_ way ... SUCCESS
