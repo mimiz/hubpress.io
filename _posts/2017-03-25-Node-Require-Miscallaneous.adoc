@@ -571,6 +571,7 @@ As you can see the execution output exactly the same, so this is not a good solu
 
 [red big]*FAIL*
 
+https://github.com/mimiz/node_require_cache/tree/import_way[Source code, branch import_way]
 
 == Conclusion
 
