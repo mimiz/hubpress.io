@@ -17,7 +17,7 @@ Imagine we have some datas in a Json file we want to access in different modules
 
 This `datas.json` is quite short, but for explaining the situation it is more than enough !
 
-Now the code : 
+Now the code :
 
 [source, js]
 .index.js
@@ -58,7 +58,7 @@ module.exports = {
 
 As you can see, `module1` and `module2` are exactly same.
 
-So if we execute the code, we will have the following output : 
+So if we execute the code, we will have the following output :
 
 [source, zsh]
 .output 1
@@ -68,7 +68,7 @@ So if we execute the code, we will have the following output :
 { version: 'O.1', name: 'MyApplication' }
 ----
 
-Ok, now imagine `module1` will modify some value before logging : 
+Ok, now imagine `module1` will modify some value before logging :
 
 [source, js]
 .module1.js (version 2)
@@ -88,7 +88,7 @@ function lowerCaseName(){
 ----
 <1> We just add this simple function that will lowerCase the name.
 
-In my idea, this should not affect the `module2` as they should be independant, so when I execute the code, here is the output : 
+In my idea, this should not affect the `module2` as they should be independant, so when I execute the code, here is the output :
 
 [source, zsh]
 .output 2
@@ -97,15 +97,15 @@ In my idea, this should not affect the `module2` as they should be independant, 
 { version: 'O.1', name: 'myapplication' }
 { version: 'O.1', name: 'myapplication' }<1>
 ----
-<1> Damned ! 
+<1> Damned !
 
-== Why 
+== Why
 
 Actually the reason is quite simple, when you require the file `datas.json`, require will create the object and store it in the `require.cache` object, then next time you use `require('./datas.json')` to retreive the datas, require will return you the value in that `require.cache` object.
 
 So it mean that it gives you the reference to the value, so if you change one property of that value, all other modules are affected as you are actually doing the change on the reference in the cache.
 
-.This is quite well documented in the Node.js documentation : 
+.This is quite well documented in the Node.js documentation :
 [quote, Node.Js Documentation, https://nodejs.org/api/modules.html#modules_caching]
 ____
 Modules are cached after the first time they are loaded. This means (among other things) that every call to require('foo') will get exactly the same object returned, if it would resolve to the same file.
@@ -120,20 +120,20 @@ Remember that Node.Js is single thread, it mean for example that the require cac
 
 == How to have the desired behaviour
 
-Now I will try to make the code work as desired. 
+Now I will try to make the code work as desired.
 
 Some of the solutions are not solving the problem, but I wanted to try to see how it works ...
 
 
 === The _Const_ way ... FAIL
 
-First I wanted to use the new ES6 `const` instead of `var` in the line 
+First I wanted to use the new ES6 `const` instead of `var` in the line
 
 [source, js]
 ----
-// replace 
+// replace
 var myDatas = require('./datas.json');
-// with 
+// with
 const myDatas = require('./datas.json');
 ----
 
@@ -146,16 +146,16 @@ const myDatas = require('./datas.json');
 { version: 'O.1', name: 'myapplication' }
 { version: 'O.1', name: 'myapplication' }<1>
 ----
-<1> Damned ! 
+<1> Damned !
 
 But actually, `const` do not prevent the variable to be modified, but prevent reafectation.
 
-[red big]#FAIL# 
+[red big]#FAIL#
 
 
 === The _delete_ way ... SUCCESS
 
-With this solution, you will `delete` the reference in the `require.cache` object before require the `datas.json` file like this : 
+With this solution, you will `delete` the reference in the `require.cache` object before require the `datas.json` file like this :
 
 [source, js]
 .module2.js
@@ -167,7 +167,7 @@ var myDatas = require('./datas.json');
 
 As you may not know how your modules are inserted, you need to add the line on every files that need to use the `datas.json` file.
 
-In my opinion, this is not very convenient, but it works : 
+In my opinion, this is not very convenient, but it works :
 
 [source, zsh]
 .output 4
@@ -188,7 +188,7 @@ With this solution I imagine to create a `Proxy` around the json datas, and over
 
 This approach can be usefull to throw excpetion if someone try to set the property value.
 
-Here is the code : 
+Here is the code :
 
 [source, js]
 .datasProxy.js
@@ -196,7 +196,7 @@ Here is the code :
 var datas = require('./datas.json'); <1>
 
 module.exports = new Proxy(datas, {
-  set:function(){ 
+  set:function(){
     return; <2>
   }
 });
@@ -213,7 +213,7 @@ var myDatas = require('./datas.json');
 var myDatas = require('./datasProxy');
 ----
 
-Can you see a big problem ? 
+Can you see a big problem ?
 
 YES, the code in `module1` should be updated because now we can not set the property (even locally)
 
@@ -230,7 +230,7 @@ Let's first execute the code without any modification :
 So there is a problem, the first line should display the text MyApplciation in lowercase.
 So let's edit the code in `module1` to have the desired behaviour.
 
-Here is a working code : 
+Here is a working code :
 
 [source, js]
 .module1.js
@@ -250,7 +250,7 @@ function lowerCaseName(){
 ----
 <1> We use `Object.assign()` to create a _"copy"_ of the object in the `module1`
 
-If we look at the output : 
+If we look at the output :
 
 [source, zsh]
 .output 6
@@ -260,7 +260,7 @@ If we look at the output :
 { version: 'O.1', name: 'MyApplication' }
 ----
 
-So it works ! 
+So it works !
 
 But, as the MDN web site says:
 
@@ -281,9 +281,9 @@ I think both solution can be justified, you just need to make a choice.
 
 This solution is the solution I considered previously.
 
-So with this solution, the _"Proxy"_ (or you can call it, the _"wrapper"_) will create the copy and returns it to the modules : 
+So with this solution, the _"Proxy"_ (or you can call it, the _"wrapper"_) will create the copy and returns it to the modules :
 
-So edit the Proxy code, and the modules : 
+So edit the Proxy code, and the modules :
 
 [source, js]
 .datasProxy.js
@@ -301,8 +301,8 @@ function clone(datas){
 <1> We export a function that need to be called in module to return a copy of the datas
 <2> Here we use a hack to clone _"deeply"_ an object.
 
-Then edit the modules to call the exported function 
- 
+Then edit the modules to call the exported function
+
 [source, js]
 .module1.js
 ----
@@ -334,7 +334,7 @@ module.exports = {
 ----
 <1> Call the function to get the copy.
 
-Then execute the code : 
+Then execute the code :
 
 [source, zsh]
 .output 7
@@ -344,7 +344,7 @@ Then execute the code :
 { version: 'O.1', name: 'MyApplication' }
 ----
 
-Great it works ! 
+Great it works !
 
 This is my favorite solution.
 
@@ -361,7 +361,7 @@ https://www.npmjs.com/package/decache[Decache] is a Node Module, that remove mod
 
 This solution has exactly the same effect than the _delete_ solution I present before. But it make it easier to do.
 
-First you need to install the `decache` node module : 
+First you need to install the `decache` node module :
 
 [source, bash]
 ----
@@ -370,7 +370,7 @@ npm install decache --save
 ----
 <1> This is not necessary if you already initialise a node project.
 
-Then edit the code : 
+Then edit the code :
 
 [source, js]
 .index.js
@@ -426,7 +426,7 @@ NOTE: Maybe we should use _decache_ from both `module1.js` and `module2.js` beca
 { version: 'O.1', name: 'MyApplication' }
 ----
 
-It works ! 
+It works !
 
 [green big]*SUCCESS*
 
@@ -474,7 +474,7 @@ npm install babel-cli --save-dev
 ----
 <1> Now you can use `npm run build` to build from ES6 code
 +
-4. Configure babel : 
+4. Configure babel :
 .. Install the _presets_
 +
 [source, zsh]
@@ -494,7 +494,54 @@ npm install babel-preset-env --save-dev
 +
 4. Edit the Code to convert it to ES6
 +
+[source, js]
+./src/datas.js
+----
+export default {
+  "version": "0.1",
+  "name": "MyApplication"
+};
+----
++
+[source, js]
+./src/index.js
+----
+import module1 from './module1';
+import module2 from './module2';
 
+module1.log();
+module2.log();
+----
++
+[source, js]
+./src/module1.js
+----
+import myDatas from './datas';
+
+export default {
+    log: function() {
+        lowerCaseName();
+        console.log(myDatas);
+    }
+};
+
+function lowerCaseName() {
+    myDatas.name = myDatas.name.toLowerCase();
+}
+----
++
+[source, js]
+./src/module2.js
+----
+import myDatas from './datas';
+
+
+export default {
+    log: function() {
+        console.log(myDatas);
+    }
+}
+----
 +
 5. Build
 +
@@ -514,8 +561,16 @@ npm run build
 ----
 +
 
-==> It does not fix the _cacche_ 
 
+As you can see the execution output exactly the same, so this is not a good solution.
+
+[red big]*FAIL*
 
 
 == Conclusion
+
+As a conclusion, I would say that it is important to understand how the `require` cache works, that's why I wrote this article.
+
+In order to solve the problem presented in the introduction, I would use the _"clone"_ solution, by creating a _"wrapper"_ object, maybe using the `Proxy` from ES6.
+
+Please feel free to make any comments ...
