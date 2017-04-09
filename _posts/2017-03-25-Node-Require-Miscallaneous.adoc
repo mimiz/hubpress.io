@@ -99,6 +99,8 @@ In my idea, this should not affect the `module2` as they should be independant, 
 ----
 <1> Damned !
 
+https://github.com/mimiz/node_require_cache[Source code]
+
 == Why
 
 Actually the reason is quite simple, when you require the file `datas.json`, require will create the object and store it in the `require.cache` object, then next time you use `require('./datas.json')` to retreive the datas, require will return you the value in that `require.cache` object.
