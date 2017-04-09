@@ -120,7 +120,10 @@ Remember that Node.Js is single thread, it mean for example that the require cac
 
 == How to have the desired behaviour
 
-So now, how can we do to be able to edit values without changing affecting other modules.
+Now I will try to make the code work as desired. 
+
+Some of the solutions are not solving the problem, but I wanted to try to see how it works ...
+
 
 === The _Const_ way ... fail
 
@@ -134,7 +137,7 @@ var myDatas = require('./datas.json');
 const myDatas = require('./datas.json');
 ----
 
-But actually, `const` do not prevent the variable to be modified, but prevent reafectation, so [red big]#this can not work#
+
 
 [source, zsh]
 .output 3
@@ -144,6 +147,10 @@ But actually, `const` do not prevent the variable to be modified, but prevent re
 { version: 'O.1', name: 'myapplication' }<1>
 ----
 <1> Damned ! 
+
+But actually, `const` do not prevent the variable to be modified, but prevent reafectation.
+
+[red big]#FAIL# 
 
 
 === The _delete_ way ... success
@@ -171,6 +178,8 @@ In my opinion, this is not very convenient, but it works :
 <1> Great !
 
 I Think that this solution is the *_"Quick And Dirty"_* solution.
+
+[green big]*SUCCESS*
 
 === The _Proxy_ Way ...
 
@@ -202,7 +211,6 @@ var myDatas = require('./datas.json');
 // with
 var myDatas = require('./datasProxy');
 ----
-
 
 Can you see a big problem ? 
 
@@ -264,6 +272,8 @@ Maybe you should use a "clone" function that allow to clone objects deeply (chec
 I think this solution is not too bad, but the thing is that you delegate to the module the need to create a copy, maybe this suits your needs, or maybe we can do it in the proxy itself.
 
 I think both solution can be justified, you just need to make a choice.
+
+[green big]*SUCCESS*
 
 
 === The _Clone_ Way  ...
@@ -335,22 +345,14 @@ Then execute the code :
 
 Great it works ! 
 
-This is one of my prefered solution.
+This is my favorite solution.
 
-
-=== The _ServiceLocator_ Way ... 
-
-With this solution, we will use an object (a kind of registry) that will expose (at least) two methods `get` and `set` and will be inserted in every module to retreive the datas.
-
-This is a way of https://en.wikipedia.org/wiki/Inversion_of_control[_"Inversion Of Control"_] 
-
-As code speak louders, let's write this object : 
-
+[green big]*SUCCESS*
 
 
 === The _import_ Way (aka. the _ES6_ way)
 
-First I need to say that I first did not considered this solution, this solution was given to me by Jéremy  Morin  (a co-worker).
+First I need to say that I first did not considered this solution, this solution was given to me by https://jermor.in/[Jérémy  Morin]  (a co-worker).
 
 As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, we will need to _"babelize"_ (transpile with babel) the code, and for that we need to refactor our code, and initilaze a npm project.
 
