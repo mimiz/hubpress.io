@@ -432,17 +432,87 @@ It works !
 
 === The _import_ Way (aka. the _ES6_ way) ... FAIL
 
-This idea was given to me by https://jermor.in/[Jérémy  Morin].
+This idea was also given to me by https://jermor.in/[Jérémy  Morin].
 
-As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 syntax, we will need to _"babelize"_ (transpile with babel) the code, and for that we need to refactor our code, and initilaze a npm project.
+As Node.JS (version 7.4.0 on my laptop) is not compatible with the ES6 (import) syntax, we will need to _"babelize"_ (transpile with babel) the code, and for that we need to refactor our code, and initilaze a npm project.
 
 1. First create a `src` doirectory and copy all files inside that directory
 2. In a terminal window run the `npm init` command and answer all question
++
+[source, zsh]
+----
+npm init
+----
++
 3. Then install the `babel-cli` dependency
++
+[source, zsh]
+----
+npm install babel-cli --save-dev
+----
++
 4. Create a _"build"_ script
++
+[source, json]
+.package.json
+----
+{
+  "name": "require_strange",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d lib" <1>
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.24.1"
+  }
+}
+----
+<1> Now you can use `npm run build` to build from ES6 code
++
+4. Configure babel : 
+.. Install the _presets_
++
+[source, zsh]
+----
+npm install babel-preset-env --save-dev
+----
++
+.. Create the `.babelrc`
++
+[source, json]
+./.babelrc
+----
+{
+  "presets":["env"]
+}
+----
++
 4. Edit the Code to convert it to ES6
++
+
++
 5. Build
-6. Test
++
+[source, zsh]
+----
+npm run build
+----
++
+6. Run
++
+[source, zsh]
+.output 9
+----
+⇒  node index.js
+{ version: 'O.1', name: 'myapplication' }
+{ version: 'O.1', name: 'myapplication' }
+----
++
 
 ==> It does not fix the _cacche_ 
 
