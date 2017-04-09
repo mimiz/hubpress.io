@@ -1,126 +1,71 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 09 Apr 2017 18:11:05 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Recently I had to install Node.JS on a server and allow all users to be able to use it.
-As I like the nvm concept to be able to easily install Node.Js, I would like to be able to install Node via NVM, and make Node.Js available for all users. I do not want users to be able to install their own version of Node.JS, and I want to control the Node.js global packages on that computer.</p>
-</div>
-<div class="paragraph">
-<p>So we will do the following</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_install_some_usefull_packages">Install some usefull packages</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="title">Run as root</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">apt-get install git vim curl build-essential sudo</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_install_nvm_as_root_superuser">Install nvm as "root" / superuser</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>First you need to clone the nvm repository :</p>
-</div>
-<div class="listingblock">
-<div class="title">clone nvm</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">git clone https://github.com/creationix/nvm.git /opt/nvm</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then create the directory <code>/usr/local/nvm</code></p>
-</div>
-<div class="listingblock">
-<div class="title">create diretory</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">mkdir /usr/local/nvm</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The edit the <code>~/.bashrc</code> and add the following line to the file :</p>
-</div>
-<div class="listingblock">
-<div class="title">~/.bashrc</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">export NVM_DIR=/usr/local/nvm
-source /opt/nvm/nvm.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then logout and login again, or type <code>source ~/.bashrc</code> to enable nvm</p>
-</div>
-<div class="paragraph">
-<p>Try nvm :</p>
-</div>
-<div class="listingblock">
-<div class="title">try nvm</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">nvm install 6.10.1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now <em>nvm</em> is installed for root, but not all users.</p>
-</div>
-<div class="paragraph">
-<p>To activate the node installation for users, we will add the script <code>/etc/profile.d/nvm.sh</code> :</p>
-</div>
-<div class="listingblock">
-<div class="title">/etc/profile.d/nvm.sh</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/bin/bash
-VERSION=`cat /usr/local/nvm/alias/default`
-export PATH="/usr/local/nvm/versions/node/v$VERSION/bin:$PATH"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then make that file runnable : <code>chmod +x /etc/profile.d/nvm.sh</code></p>
-</div>
-<div class="sect2">
-<h3 id="_as_user">As user</h3>
-<div class="paragraph">
-<p>Now connect as a user, and try to use node :</p>
-</div>
-<div class="listingblock">
-<div class="title">try node</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">node -v</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You should see the node version installed before (6.10.1)</p>
-</div>
-<div class="paragraph">
-<p>Then try to install a new version of  node :</p>
-</div>
-<div class="listingblock">
-<div class="title">try node</div>
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">nvm install 7.8.0</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Result should be <code>nvm : commande introuvable</code></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_install_some_global_packages">Install some global packages</h3>
-<div class="paragraph">
-<p>With node you may want to install some package globbaly (<code>forever</code> for example), and I think we should not allow users to install what they want so we may install global packages as root also.</p>
-</div>
-<div class="paragraph">
-<p>As root run  the command <code>npm install -g nodemon</code> for example, then login as a user, and run <code>nodemon index.js</code> and it works.</p>
-</div>
-<div class="paragraph">
-<p>So all global package should be installed as root (or other superuser).</p>
-</div>
-</div>
-</div>
-</div>]]></description><link>https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</guid><category><![CDATA[node.js]]></category><category><![CDATA[nvm]]></category><category><![CDATA[installation]]></category><category><![CDATA[debian]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sun, 02 Apr 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Node Require Miscallaneous ...]]></title><description><![CDATA[<div id="preamble">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Node Require Miscallaneous ...</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://mimiz.github.io/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:400,700,400italic,700italic|Open+Sans:400italic,700italic,700,400">
+    <link rel="stylesheet" type="text/css" href="//mimiz.github.io/themes/roon/assets/css/screen.css?v=1491761465969" />
+
+    <link rel="canonical" href="https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Rémi&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Node Require Miscallaneous ..." />
+    <meta property="og:description" content="So times ago (I don&amp;#8217;t really remember when), working on a Node.Js project, I realised something about require. The situation &amp;#8230;&amp;#8203; Imagine we have some datas in a Json file we want to access in different modules. datas.json {   &quot;version&quot;:&quot;0.1&quot;,   &quot;name&quot;:&quot;MyApplication&quot; } This datas." />
+    <meta property="og:url" content="https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html" />
+    <meta property="article:published_time" content="2017-03-25T00:00:00.000Z" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Node Require Miscallaneous ..." />
+    <meta name="twitter:description" content="So times ago (I don&amp;#8217;t really remember when), working on a Node.Js project, I realised something about require. The situation &amp;#8230;&amp;#8203; Imagine we have some datas in a Json file we want to access in different modules. datas.json {   &quot;version&quot;:&quot;0.1&quot;,   &quot;name&quot;:&quot;MyApplication&quot; } This datas." />
+    <meta name="twitter:url" content="https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Rémi's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "mimiz33",
+        "image": "https://avatars1.githubusercontent.com/u/377238?v=3",
+        "url": "https://mimiz.github.io/author/mimiz/",
+        "sameAs": "http://www.mimiz.fr"
+    },
+    "headline": "Node Require Miscallaneous ...",
+    "url": "https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html",
+    "datePublished": "2017-03-25T00:00:00.000Z",
+    "description": "So times ago (I don&amp;#8217;t really remember when), working on a Node.Js project, I realised something about require. The situation &amp;#8230;&amp;#8203; Imagine we have some datas in a Json file we want to access in different modules. datas.json {   &quot;version&quot;:&quot;0.1&quot;,   &quot;name&quot;:&quot;MyApplication&quot; } This datas."
+}
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Rémi&#x27;s Blog" href="https://mimiz.github.io/rss/" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css">
+</head>
+<body class="post-template  noimage">
+
+    
+
+
+    <article role="main" class="">
+        <header>
+            <a href="https://mimiz.github.io" id="home_link">«</a>
+            <div class="meta"><time datetime="2017-03-25"><a href="https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html">March 25, 2017</a></time> <span class="count" id="js-reading-time"></span></div>
+            <h1>Node Require Miscallaneous ...</h1>
+        </header>
+
+        <div class="text" id="js-post-content">
+            <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>So times ago (I don&#8217;t really remember when), working on a Node.Js project, I realised something about <code>require</code>.</p>
@@ -894,590 +839,186 @@ export default {
 <p>Please feel free to make any comments &#8230;&#8203;</p>
 </div>
 </div>
-</div>]]></description><link>https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html</guid><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sat, 25 Mar 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Recently, on a project I had to document an API using <a href="http://swagger.io/">Swagger</a>, as an authentication mechanism, the API, is using JWT.</p>
 </div>
-<div class="paragraph">
-<p>The Token needs to be set in the <code>Authorization</code> Header of the HTTP request as this :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>Authorization Bearer: JWT-token</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As we wanted to use the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> to allow clients to test requests and responses of the API.</p>
-</div>
-<div class="paragraph">
-<p>To define the API, we use  the <a href="http://swagger.io/swagger-editor/">Swagger Editor</a> Online.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_start_the_documentation_and_the_login_route">Start the Documentation and the /login route</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>First we need to create the main API description :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
-info:
- version: 0.0.1
- title: MY-SUPERB-API
-host: '127.0.0.1:4000'
-schemes:
- - http
- - https
-produces:
- - application/json
-paths:
- /login:
-  post:
-   tags:
-    - auth
-   description: |
-    Allow users to log in, and to receive a Token
-   parameters:
-    -
-     in: body
-     name: body
-     description: The email/password
-     required: true
-     schema:
-      $ref: '#/definitions/Login'
-   responses:
-    '200':
-     description: Login Success
-     schema:
-      $ref: '#/definitions/Token'
-    '400':
-     description: Whether the user is not found or error while login
-     schema:
-      $ref: '#/definitions/Error'
-    '403':
-     description: &gt;-
-      If user is not found (bad credentials) OR if user can not login (a
-      concierge of an unsctive client)
-     schema:
-      $ref: '#/definitions/Error'
-definitions:
- Login:
-  type: object
-  properties:
-   email:
-    type: string
-   password:
-    type: string
- Token:
-  type: object
-  properties:
-   token:
-    type: string
- Error:
-  type: object
-  properties:
-   message:
-    type: string
-   error:
-    type: string</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will define the <code>/login</code> route that receive a <code>POST</code> HTTP request with email and password, if they matches your credential provider the route will return a <code>Token</code> response :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-json" data-lang="json">{
-  "token":"JWT TOKEN"
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_describe_the_security_definition">Describe the Security Definition</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Now we should define create a <strong>securityDefinitions</strong>, this will describe how authorization is made, and allow the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> to ask for a token when needed.</p>
-</div>
-<div class="paragraph">
-<p>So first edit the API definition :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
-info:
- version: 0.0.1
- title: MY-SUPERB-API
-host: '127.0.0.1:4000'
-schemes:
- - http
- - https
-produces:
- - application/json
-securityDefinitions: <i class="conum" data-value="1"></i><b>(1)</b>
- Bearer:
-  description: |
-   For accessing the API a valid JWT token must be passed in all the queries in
-   the 'Authorization' header.
+        </div>
+
+        <menu>
+            <a href="" id="btn_share" class="btn" title="Share">
+                <span aria-hidden="true" data-icon="S"></span>
+                <strong>Share</strong>
+            </a>
+            <a href="http://twitter.com/share?text=Node%20Require%20Miscallaneous%20...&url=https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;" id="btn_comment" class="btn" target="_blank">
+                <span aria-hidden="true" data-icon="C"></span> Comment on Twitter
+            </a>
+        </menu>
 
 
-   A valid JWT token is generated by the API and retourned as answer of a call
-   to the route /login giving a valid user &amp; password.
+        <footer class="post-footer" role="contentinfo">
+
+            <div class="vcard">
+                <a href="https://mimiz.github.io/rss" id="btn_feed" class="btn" title="Feed" target="_blank">
+                    <span aria-hidden="true" data-icon=")"></span>
+                    <strong>Feed</strong>
+                </a>
+
+                <a href="https://mimiz.github.io/author/mimiz/" class="photo">
+                    <span style="background-image: url('https://avatars1.githubusercontent.com/u/377238?v&#x3D;3');">
+                        <img src="https://avatars1.githubusercontent.com/u/377238?v&#x3D;3" alt="mimiz33">
+                    </span>
+                </a>
+
+                <div class="details">
+                    <h4><a href="https://mimiz.github.io/author/mimiz/" class="url n">mimiz33</a></h4>
+                    
+                    <a href="http://www.mimiz.fr" class="js-remove-domain-schema">http://www.mimiz.fr</a>
+                </div>
+            </div>
+
+            <div id="user_bio">
+                <div class="inner">
+                    
+                </div>
+            </div>
+
+        </footer>
 
 
-   The following syntax must be used in the 'Authorization' header :
-
-       Bearer: xxxxxx.yyyyyyy.zzzzzz
-  type: apiKey
-  name: Authorization
-  in: header
-paths:
- /login:
-  post:
-   tags:
-    - auth
-   description: |
-    Allow users to log in, and to receive a Token
-   parameters:
-    -
-     in: body
-     name: body
-     description: The email/password
-     required: true
-     schema:
-      $ref: '#/definitions/Login'
-   responses:
-    '200':
-     description: Login Success
-     schema:
-      $ref: '#/definitions/Token'
-    '400':
-     description: Whether the user is not found or error while login
-     schema:
-      $ref: '#/definitions/Error'
-    '403':
-     description: &gt;-
-      If user is not found (bad credentials) OR if user can not login (a
-      concierge of an unsctive client)
-     schema:
-      $ref: '#/definitions/Error'
-definitions:
- Login:
-  type: object
-  properties:
-   email:
-    type: string
-   password:
-    type: string
- Token:
-  type: object
-  properties:
-   token:
-    type: string
- Error:
-  type: object
-  properties:
-   message:
-    type: string
-   error:
-    type: string</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Ajout de la clé <strong>securityDefinitions</strong></td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>The description is, I think, self described, so you can understand it</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_create_a_protected_route">Create a protected route</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>And now you can define a route <code>/users</code> for example that needs the user to send a valid Authorization header  &#8230;&#8203;</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">swagger: '2.0'
-info:
- version: 0.0.1
- title: MY-SUPERB-API
-host: '127.0.0.1:4000'
-schemes:
- - http
- - https
-produces:
- - application/json
-securityDefinitions:
- Bearer:
-  description: |
-   For accessing the API a valid JWT token must be passed in all the queries in
-   the 'Authorization' header.
 
 
-   A valid JWT token is generated by the API and retourned as answer of a call
-   to the route /login giving a valid user &amp; password.
+    </article>
+
+    <div id="share_modal">
+        <div class="wrap">
+            <div class="inner">
+                <header>
+                    Share
+                    <a href="" class="close" title="Close">&times;</a>
+                </header>
+
+                <div class="roon-share-links">
+                    <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a>
+                    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+                    <div id="fb-elems">
+                        <div id="fb-root"></div>
+                        <script>(function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) return;
+                        js = d.createElement(s); js.id = id;
+                        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=463438580397968";
+                        fjs.parentNode.insertBefore(js, fjs);
+                        }(document, 'script', 'facebook-jssdk'));</script>
+                        <div class="fb-like" data-send="false" data-layout="button_count" data-width="110" data-show-faces="false" data-font="arial"></div>
+                    </div>
+
+                    <div id="pinit-btn">
+                        <a href="//pinterest.com/pin/create/button/?url=https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html&amp;description=Node%20Require%20Miscallaneous%20...-R%C3%A9mi's%20Blog " data-pin-do="buttonPin" data-pin-config="beside"><img src="//assets.pinterest.com/images/pidgets/pin_it_button.png"></a>
+                        <script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-   The following syntax must be used in the 'Authorization' header :
 
-       Bearer: xxxxxx.yyyyyyy.zzzzzz
-  type: apiKey
-  name: Authorization
-  in: header
-paths:
- /login:
-  post:
-   tags:
-    - auth
-   description: |
-    Allow users to log in, and to receive a Token
-   parameters:
-    -
-     in: body
-     name: body
-     description: The email/password
-     required: true
-     schema:
-      $ref: '#/definitions/Login'
-   responses:
-    '200':
-     description: Login Success
-     schema:
-      $ref: '#/definitions/Token'
-    '400':
-     description: Whether the user is not found or error while login
-     schema:
-      $ref: '#/definitions/Error'
-    '403':
-     description: &gt;-
-      If user is not found (bad credentials) OR if user can not login (a
-      concierge of an unsctive client)
-     schema:
-      $ref: '#/definitions/Error'
- /users:
-  get:
-   tags:
-    - users
-   security:
-    - Bearer: []
-   description: Get a list of all existing users
-   responses:
-    '200':
-     description: An array of users
-     schema:
-      type: array
-      items:
-       $ref: '#/definitions/User'
-definitions:
- Login:
-  type: object
-  properties:
-   email:
-    type: string
-   password:
-    type: string
- Token:
-  type: object
-  properties:
-   token:
-    type: string
- Error:
-  type: object
-  properties:
-   message:
-    type: string
-   error:
-    type: string
- User:
-    type: object
-    properties:
-     email:
-      type: string
-     password:
-      type: string
-     firstName:
-      type: string
-     lastName:
-      type: string
-     lastLogin:
-      type: string
-      format: date</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now you just described that the <code>/users</code> route need the Bearer authentication &#8230;&#8203;</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_use_swagger_ui">Use Swagger UI</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In order to use the Swagger UI, you should be aware that the <strong>host</strong> value is defined on <em>'127.0.0.1:4000'</em> and this may be changed in your case !</p>
-</div>
-<div class="sect2">
-<h3 id="_first_login_and_get_the_token">First Login and get the token</h3>
-<div class="paragraph">
-<p>The now you can use the <a href="http://swagger.io/swagger-ui/">Swagger UI</a> (with the editor) to login :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-1.png" alt="swagger auth 1.png">
-</div>
-</div>
-<div class="paragraph">
-<p>And the response should be :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-2.png" alt="swagger auth 2.png">
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_authenticate_the_editor">Authenticate the editor :</h3>
-<div class="paragraph">
-<p>Now at the top of the generated documentation you can click the <strong>Authenticate</strong> Button :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-3.png" alt="swagger auth 3.png">
-</div>
-</div>
-<div class="paragraph">
-<p>Then fill with the Token you received at the previous step :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-4.png" alt="swagger auth 4.png">
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-We are spcifying the <strong>Bearer:</strong> keyword.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_try_the_protected_route">Try the protected route</h3>
-<div class="paragraph">
-<p>Now in the section of the protected route : <code>/users</code> you can check the <em>Bearer</em> checkbox and try the operation :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-5.png" alt="swagger auth 5.png">
-</div>
-</div>
-<div class="paragraph">
-<p>You should have a valid answer :</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="https://mimiz.github.io/images/swagger-auth-6.png" alt="swagger auth 6.png">
-</div>
-</div>
-<div class="paragraph">
-<p>Now you can add your other routes to finish defined your API.</p>
-</div>
-<div class="paragraph">
-<p>Have fun !</p>
-</div>
-</div>
-</div>
-</div>]]></description><link>https://mimiz.github.io/2016/12/05/Use-Authorization-Header-with-Swagger.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/12/05/Use-Authorization-Header-with-Swagger.html</guid><category><![CDATA[Swagger]]></category><category><![CDATA[Authorization]]></category><category><![CDATA[Bearer]]></category><category><![CDATA[API]]></category><category><![CDATA[Express]]></category><category><![CDATA[JWT]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 05 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[How to use events in Node.js]]></title><description><![CDATA[<div class="paragraph">
-<p>In this blog post I will explain how to create and use Events in Node.Js
-The main purpose is to demonstrate the following :</p>
-</div>
-<div class="paragraph">
-<p>I have a module (a) that will do some operations, and I want that module to emit an event when some operations are done.
-Then I would like other modules (such as b module) to be able to subscribe to those operations.</p>
-</div>
-<div class="paragraph">
-<p>In order to solve this I will create an EventManager object based on node events.</p>
-</div>
-<div class="paragraph">
-<p>Create the files :</p>
-</div>
-<div class="listingblock">
-<div class="title">a.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var operations = {
-  add:function(){
-    // operation for add
-  },
-  remove:function(){
-    // operation for remove
-  },
-  update:function(){
-    // operation for update
-  }
-}
-module.exports = operations;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">b.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var b = {
-  someCodeWhenAddInA:function(){
-    // this function should be executed after a.add is executed
-  }
-}
-module.exports = b;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>So the purpose is more than simple, when <code>a.add</code> is called, we want the function <code>b.someCodeWhenAddInA</code> to be called, and we also want to easylly add the ability to add modules that will execute code on <code>a.add</code> called.</p>
-</div>
-<div class="paragraph">
-<p>Let&#8217;s create the <code>EventManager</code>.</p>
-</div>
-<div class="listingblock">
-<div class="title">EventManager.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var util         = require("util");
-var EventEmitter = require("events").EventEmitter;
-function EventManager(){
-    EventEmitter.call(this);
-}
 
-util.inherits(EventManager, EventEmitter);
 
-module.exports = new EventManager();</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-refer to the documentation to know more about <a href="https://nodejs.org/api/events.html">node js events</a>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Edit the code in <code>a</code> and <code>b</code> modules :</p>
-</div>
-<div class="listingblock">
-<div class="title">a.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
-var operations = {
-  add:function(){
-    // operation for add
-    EventManager.emit('addedToA');
-  },
-  remove:function(){
-    // operation for remove
-  },
-  update:function(){
-    // operation for update
-  }
-}
-module.exports = operations;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">b.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
-var b = {
-  someCodeWhenAddInA:function(){
-    // this function should be executed after a.add is executed
-    console.log('someCodeWhenAddInA has been executed in b');
-  }
-}
-EventManager.on('addedToA', b.someCodeWhenAddInA);
-module.exports = b;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And now let&#8217;s simply create a runner file to try our code</p>
-</div>
-<div class="listingblock">
-<div class="title">main.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
-var b = require('./b');
 
-a.add();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This should print <strong><em>someCodeWhenAddInA has been executed in b</em></strong> in the console.</p>
-</div>
-<div class="paragraph">
-<p>And that&#8217;s all !</p>
-</div>
-<div class="paragraph">
-<p>Now if you want to create a <code>c</code> module which will listen to the same event, it&#8217;s easy, and no need to edit the <code>a</code> module anymore :</p>
-</div>
-<div class="listingblock">
-<div class="title">c.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var EventManager = require('./EventManager');
-var c = {
-  anotherFonction:function(){
-    // this function should be executed after a.add is executed
-    console.log('anotherFonction has been executed in c');
-  }
-}
-EventManager.on('addedToA', c.anotherFonction);
-module.exports = b;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">main.js</div>
-<div class="content">
-<pre class="highlight"><code class="language-javascript" data-lang="javascript">var a = require('./a');
-var b = require('./b'); <i class="conum" data-value="1"></i><b>(1)</b>
-var c = require('./c'); <i class="conum" data-value="2"></i><b>(2)</b>
+    <script>
 
-a.add();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will print :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>someCodeWhenAddInA has been executed in b
-anotherFonction has been executed in c</pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If you inverse the <strong>1</strong> and <strong>2</strong> the log will also be impacted.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Here we are, comments are appreciated</p>
-</div>]]></description><link>https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</link><guid isPermaLink="true">https://mimiz.github.io/2016/11/28/How-to-use-events-in-Nodejs.html</guid><category><![CDATA[Node.js]]></category><category><![CDATA[Events]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
+            function get_text(el) {
+                ret = "";
+                var length = el.childNodes.length;
+                for(var i = 0; i < length; i++) {
+                    var node = el.childNodes[i];
+                    if(node.nodeType != 8) {
+                        ret += node.nodeType != 1 ? node.nodeValue : get_text(node);
+                    }
+                }
+                return ret;
+            }
+            function reading_time () {
+                var post_content = document.getElementById('js-post-content');
+                if (post_content) {
+                    var words = get_text(post_content),
+                        count = words.split(/\s+/).length,
+                        read_time = Math.ceil((count / 150)),
+                        read_time_node = document.createTextNode(read_time + ' min read');
+                    document.getElementById('js-reading-time').appendChild(read_time_node);
+                }
+            }
+
+        function no_schema_links () {
+            var links = document.querySelectorAll('.js-remove-domain-schema');
+            if (links) {
+                for (i = 0; i < links.length; ++i) {
+                    var link = links[i],
+                        text = link.innerHTML,
+                        no_schema = text.replace(/.*?:\/\//g, "");
+                    link.innerHTML = no_schema;
+                }
+            }
+        }
+
+        window.onload = function () {
+            no_schema_links();
+
+            reading_time();
+        }
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js?v="></script> 
+      <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+          });
+        });
+
+        hljs.initHighlightingOnLoad();
+      </script>
+       
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+
+        <script>
+            $(function(){
+                var share_modal = $("#share_modal"),
+                    update_social_links = true;
+
+                $("#btn_share").click(function(){
+                    var that = $(this);
+                    share_modal.fadeIn(200);
+                    return false;
+                });
+
+                share_modal.click(function(e){
+                    if (e.target.className == "wrap" || e.target.id == "share_modal") {
+                        share_modal.fadeOut(200);
+                    }
+                    return false;
+                });
+
+                share_modal.find("div.inner > header > a.close").click(function(){
+                    share_modal.fadeOut(200);
+                    return false;
+                });
+            });
+        </script>
+
+
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-18243278-5', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+
+</body>
+</html>
