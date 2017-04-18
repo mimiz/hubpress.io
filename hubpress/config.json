@@ -2,21 +2,33 @@
   "meta": {
     "username": "mimiz",
     "repositoryName": "mimiz.github.io",
-    "branch": "master"
+    "branch": "master",
+    "cname": ""
   },
   "site": {
     "title": "Rémi's Blog",
     "description": "A new blog ...",
     "postsPerPage": "5",
-    "googleAnalytics": "UA-18243278-5"
+    "googleAnalytics": "UA-18243278-5",
+    "logo": "",
+    "cover": "",
+    "delay": "",
+    "disqus": ""
   },
   "socialnetwork": {
     "twitter": "mimiz33",
     "googleplus": "",
-    "github": "mimiz33"
+    "github": "mimiz33",
+    "email": "",
+    "facebook": "",
+    "instagram": "",
+    "pinterest": "",
+    "flickr": "",
+    "linkedin": "",
+    "stackoverflow": ""
   },
   "theme": {
-    "name": "roon"
+    "name": "casper"
   },
   "urls": {
     "site": "https://mimiz.github.io",
