@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 09 Apr 2017 20:41:35 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 18 Apr 2017 03:54:34 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Debian Install Node.JS globally with NVM]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recently I had to install Node.JS on a server and allow all users to be able to use it.
@@ -120,10 +120,10 @@ export PATH="/usr/local/nvm/versions/node/v$VERSION/bin:$PATH"</code></pre>
 </div>
 </div>
 </div>
-</div>]]></description><link>https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</guid><category><![CDATA[node.js]]></category><category><![CDATA[nvm]]></category><category><![CDATA[installation]]></category><category><![CDATA[debian]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sun, 02 Apr 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Node Require Miscallaneous ...]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/04/02/Debian-Install-NodeJS-globally-with-NVM.html</guid><category><![CDATA[node.js]]></category><category><![CDATA[nvm]]></category><category><![CDATA[installation]]></category><category><![CDATA[debian]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sun, 02 Apr 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Node Require plays hide-and-seek]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>So times ago (I don&#8217;t really remember when), working on a Node.Js project, I realised something about <code>require</code>.</p>
+<p>Some times ago (I don&#8217;t really remember when), working on a Node.Js project, I realised something about <code>require</code> &#8230;&#8203;</p>
 </div>
 </div>
 </div>
@@ -252,7 +252,7 @@ function lowerCaseName(){
 <h2 id="_why">Why</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Actually the reason is quite simple, when you require the file <code>datas.json</code>, require will create the object and store it in the <code>require.cache</code> object, then next time you use <code>require('./datas.json')</code> to retreive the datas, require will return you the value in that <code>require.cache</code> object.</p>
+<p>Actually the reason is quite simple, when you require the file <code>datas.json</code>, the <code>require</code> function will create the object and store it in the <code>require.cache</code> object, then next time you use <code>require('./datas.json')</code> to retreive the datas, <code>require</code> will return you the value in that <code>require.cache</code> object.</p>
 </div>
 <div class="paragraph">
 <p>So it mean that it gives you the reference to the value, so if you change one property of that value, all other modules are affected as you are actually doing the change on the reference in the cache.</p>
@@ -277,7 +277,7 @@ function lowerCaseName(){
 </div>
 </div>
 <div class="sect1">
-<h2 id="_how_to_have_the_desired_behaviour">How to have the desired behaviour</h2>
+<h2 id="_reflections_on_solutions_to_have_the_desired_behaviour">Reflections on solutions to have the desired behaviour</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Now I will try to make the code work as desired.</p>
@@ -607,8 +607,17 @@ module.exports = {
 <div class="paragraph">
 <p>Great it works !</p>
 </div>
-<div class="paragraph">
-<p>This is my favorite solution.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This is my favorite solution.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p><strong class="green big">SUCCESS</strong></p>
@@ -915,7 +924,7 @@ export default {
 <p>Please feel free to make any comments &#8230;&#8203;</p>
 </div>
 </div>
-</div>]]></description><link>https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/03/25/Node-Require-Miscallaneous.html</guid><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sat, 25 Mar 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>https://mimiz.github.io/2017/03/25/Node-Require-plays-hide-and-seek.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/03/25/Node-Require-plays-hide-and-seek.html</guid><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Sat, 25 Mar 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Use Authorization Header with Swagger]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recently, on a project I had to document an API using <a href="http://swagger.io/">Swagger</a>, as an authentication mechanism, the API, is using JWT.</p>
