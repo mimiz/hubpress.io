@@ -1,6 +1,6 @@
 = Debian Install Node.JS globally with NVM
 // See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
-:hp-image: /images/covers/nodeJs.png[Node JS, 300,200]
+:hp-image: /images/covers/nodeJs.png
 // :published_at: 2019-01-31
 :hp-tags: node.js, nvm, installation, debian
 // :hp-alt-title: My English Title
