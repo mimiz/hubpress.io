@@ -33,7 +33,7 @@
   "urls": {
     "site": "https://mimiz.github.io",
     "hubpress": "https://mimiz.github.io",
-    "theme": "//mimiz.github.io/themes/roon",
+    "theme": "//mimiz.github.io/themes/casper",
     "images": "https://mimiz.github.io/images"
   },
   "initialisationConfigComponent": {
