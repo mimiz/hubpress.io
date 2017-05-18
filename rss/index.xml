@@ -1,4 +1,208 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 18 Apr 2017 04:34:11 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Node.JS "Require" plays hide-and-seek]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 18 May 2017 10:12:47 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Configure docker httpd image]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names.</p>
+</div>
+<div class="paragraph">
+<p>As I am a docker addict, I want all my applications to be running as a docker container.</p>
+</div>
+<div class="paragraph">
+<p>Imagine I have the following applications :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 16.6668%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">url</th>
+<th class="tableblock halign-left valign-top">Container Name</th>
+<th class="tableblock halign-left valign-top">Container Port (Expose)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app1.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app1-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app2.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app2-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app3.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app3-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8080</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+I assume that all container are running (with or without <code>-P</code> flag)
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The thing is that I do not want to install a proxy (Apache or Nginx) on the docker host, so I wanted to create a docker container that will act as a proxy of all my applications</p>
+</div>
+<div class="paragraph">
+<p>So I decided to use the <a href="https://hub.docker.com/_/httpd/">docker httpd:2.4</a> image.</p>
+</div>
+<div class="paragraph">
+<p>Create your <em>project</em> directory : <code>mkdir ~/apache-proxy &amp; cd ~/apache-proxy</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extract_httpd_conf">Extract httpd.conf</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First you will need to "extract" the <code>httpd.conf</code> file from the image to be able to configure your apache server.</p>
+</div>
+<div class="paragraph">
+<p>So you need to start a docker httpd container in a terminal :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker run -it --name apacheTmp httpd:2.4</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The name <em>apacheTmp</em> is just here to make extraction easy and to show you that this container will be deleted after use&#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then open a new terminal window (or a new sesion if you are doing it remotely)</p>
+</div>
+<div class="paragraph">
+<p>And copy the <code>httpd.conf</code> file :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker cp apacheTmp:/usr/local/apache2/conf/httpd.conf ~/apache-proxy</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+personnaly I prefer to create a copy (to keep the original as it was) : <code>cp ~/apache-proxy/httpd.conf ~/apache-proxy/my-httpd.conf</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configure_apache_and_vhosts">Configure apache and vhosts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now I edited the <code>my-httpd.conf</code> file to enable modules <strong>proxy</strong> and <strong>proxy_http</strong>,</p>
+</div>
+<div class="paragraph">
+<p>I just remove comment on the lines :</p>
+</div>
+<div class="paragraph">
+<p><code>LoadModule proxy_module modules/mod_proxy.so</code></p>
+</div>
+<div class="paragraph">
+<p>And</p>
+</div>
+<div class="paragraph">
+<p><code>LoadModule proxy_http_module modules/mod_proxy_http.so</code></p>
+</div>
+<div class="paragraph">
+<p>Then I created, at the end of the files my 3 vhosts</p>
+</div>
+<div class="listingblock">
+<div class="title">www.app1.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app1.lol
+  ProxyPass / http://app1:3000/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">www.app2.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app2.lol
+  ProxyPass / http://app2:4000/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">www.app3.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app3.lol
+  ProxyPass / http://app3:8080/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_docker_container">Create Docker Container</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now I can Create my <em>"proxy"</em> docker file :</p>
+</div>
+<div class="listingblock">
+<div class="title">~/apache-proxy/Dockerfile</div>
+<div class="content">
+<pre class="highlight"><code class="language-Dockerfile" data-lang="Dockerfile">FROM httpd:2.4
+COPY ./my-httpd.conf /usr/local/apache2/conf/httpd.conf</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So I can build now :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker build -t my/apache-proxy .</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then I can run it :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker run -d -p 80:80 --link app1-container:app1 --link app3-container:app3 --link app2-container:app2 --name my-proxy my/apache-proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now you should be able to access your 3 apps &#8230;&#8203;.</p>
+</div>
+</div>
+</div>]]></description><link>https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html</guid><category><![CDATA[docker]]></category><category><![CDATA[apache]]></category><category><![CDATA[httpd]]></category><category><![CDATA[proxy]]></category><category><![CDATA[httpd.conf]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Thu, 18 May 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Node.JS "Require" plays hide-and-seek]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Some times ago (I don&#8217;t really remember when), working on a Node.Js project, I realised something about <code>require</code> &#8230;&#8203;</p>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Configure docker httpd image</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://mimiz.github.io/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="//mimiz.github.io/themes/casper/assets/css/screen.css?v=1495102367475" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Rémi&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Configure docker httpd image" />
+    <meta property="og:description" content="Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names. As I am a docker addict, I want all my applications to be running as a docker container. Imagine I have the following applications : name url Container" />
+    <meta property="og:url" content="https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html" />
+    <meta property="og:image" content="http://www.duchess-france.org/wp-content/uploads/2015/06/docker.png" />
+    <meta property="article:published_time" content="2017-05-18T00:00:00.000Z" />
+    <meta property="article:tag" content="docker" />
+    <meta property="article:tag" content="apache" />
+    <meta property="article:tag" content="httpd" />
+    <meta property="article:tag" content="proxy" />
+    <meta property="article:tag" content="httpd.conf" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Configure docker httpd image" />
+    <meta name="twitter:description" content="Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names. As I am a docker addict, I want all my applications to be running as a docker container. Imagine I have the following applications : name url Container" />
+    <meta name="twitter:url" content="https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html" />
+    <meta name="twitter:image:src" content="http://www.duchess-france.org/wp-content/uploads/2015/06/docker.png" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Rémi's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "mimiz33",
+        "image": "https://avatars1.githubusercontent.com/u/377238?v=3",
+        "url": "https://mimiz.github.io/author/mimiz/",
+        "sameAs": "http://www.mimiz.fr"
+    },
+    "headline": "Configure docker httpd image",
+    "url": "https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html",
+    "datePublished": "2017-05-18T00:00:00.000Z",
+    "image": "http://www.duchess-france.org/wp-content/uploads/2015/06/docker.png",
+    "keywords": "docker, apache, httpd, proxy, httpd.conf",
+    "description": "Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names. As I am a docker addict, I want all my applications to be running as a docker container. Imagine I have the following applications : name url Container"
+}
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Rémi&#x27;s Blog" href="https://mimiz.github.io/rss/" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css">
+</head>
+<body class="post-template tag-docker tag-apache tag-httpd tag-proxy tag-httpdconf nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head " style="background-image: url(http://www.duchess-france.org/wp-content/uploads/2015/06/docker.png)">
+    <nav class="main-nav overlay clearfix">
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-apache tag-httpd tag-proxy tag-httpdconf">
+
+        <header class="post-header">
+            <h1 class="post-title">Configure docker httpd image</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-05-18">18 May 2017</time>  on <a href="https://mimiz.github.io/tag/docker/">docker</a>, <a href="https://mimiz.github.io/tag/apache/">apache</a>, <a href="https://mimiz.github.io/tag/httpd/">httpd</a>, <a href="https://mimiz.github.io/tag/proxy/">proxy</a>, <a href="https://mimiz.github.io/tag/httpdconf/">httpd.conf</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names.</p>
+</div>
+<div class="paragraph">
+<p>As I am a docker addict, I want all my applications to be running as a docker container.</p>
+</div>
+<div class="paragraph">
+<p>Imagine I have the following applications :</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 16.6668%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">url</th>
+<th class="tableblock halign-left valign-top">Container Name</th>
+<th class="tableblock halign-left valign-top">Container Port (Expose)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app1.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app1-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app2.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app2-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">www.app3.lol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">app3-container</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8080</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+I assume that all container are running (with or without <code>-P</code> flag)
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The thing is that I do not want to install a proxy (Apache or Nginx) on the docker host, so I wanted to create a docker container that will act as a proxy of all my applications</p>
+</div>
+<div class="paragraph">
+<p>So I decided to use the <a href="https://hub.docker.com/_/httpd/">docker httpd:2.4</a> image.</p>
+</div>
+<div class="paragraph">
+<p>Create your <em>project</em> directory : <code>mkdir ~/apache-proxy &amp; cd ~/apache-proxy</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extract_httpd_conf">Extract httpd.conf</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First you will need to "extract" the <code>httpd.conf</code> file from the image to be able to configure your apache server.</p>
+</div>
+<div class="paragraph">
+<p>So you need to start a docker httpd container in a terminal :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker run -it --name apacheTmp httpd:2.4</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The name <em>apacheTmp</em> is just here to make extraction easy and to show you that this container will be deleted after use&#8230;&#8203;
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then open a new terminal window (or a new sesion if you are doing it remotely)</p>
+</div>
+<div class="paragraph">
+<p>And copy the <code>httpd.conf</code> file :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker cp apacheTmp:/usr/local/apache2/conf/httpd.conf ~/apache-proxy</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+personnaly I prefer to create a copy (to keep the original as it was) : <code>cp ~/apache-proxy/httpd.conf ~/apache-proxy/my-httpd.conf</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configure_apache_and_vhosts">Configure apache and vhosts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now I edited the <code>my-httpd.conf</code> file to enable modules <strong>proxy</strong> and <strong>proxy_http</strong>,</p>
+</div>
+<div class="paragraph">
+<p>I just remove comment on the lines :</p>
+</div>
+<div class="paragraph">
+<p><code>LoadModule proxy_module modules/mod_proxy.so</code></p>
+</div>
+<div class="paragraph">
+<p>And</p>
+</div>
+<div class="paragraph">
+<p><code>LoadModule proxy_http_module modules/mod_proxy_http.so</code></p>
+</div>
+<div class="paragraph">
+<p>Then I created, at the end of the files my 3 vhosts</p>
+</div>
+<div class="listingblock">
+<div class="title">www.app1.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app1.lol
+  ProxyPass / http://app1:3000/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">www.app2.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app2.lol
+  ProxyPass / http://app2:4000/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">www.app3.lol</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;VirtualHost *:80&gt;
+  ServerName www.app3.lol
+  ProxyPass / http://app3:8080/
+&lt;/VirtualHost&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_docker_container">Create Docker Container</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now I can Create my <em>"proxy"</em> docker file :</p>
+</div>
+<div class="listingblock">
+<div class="title">~/apache-proxy/Dockerfile</div>
+<div class="content">
+<pre class="highlight"><code class="language-Dockerfile" data-lang="Dockerfile">FROM httpd:2.4
+COPY ./my-httpd.conf /usr/local/apache2/conf/httpd.conf</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So I can build now :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker build -t my/apache-proxy .</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then I can run it :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker run -d -p 80:80 --link app1-container:app1 --link app3-container:app3 --link app2-container:app2 --name my-proxy my/apache-proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And now you should be able to access your 3 apps &#8230;&#8203;.</p>
+</div>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://mimiz.github.io/author/mimiz/" style="background-image: url(https://avatars1.githubusercontent.com/u/377238?v&#x3D;3)"><span class="hidden">mimiz33's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://mimiz.github.io/author/mimiz/">mimiz33</a></h4>
+
+                    <p>Read <a href="https://mimiz.github.io/author/mimiz/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    <span class="author-link icon-link"><a href="http://www.mimiz.fr">http://www.mimiz.fr</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Configure%20docker%20httpd%20image&amp;url=https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://mimiz.github.io/2017/05/18/Configure-docker-httpd-image.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://mimiz.github.io">Rémi&#x27;s Blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script> <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js?v="></script> 
+      <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+          });
+        });
+
+        hljs.initHighlightingOnLoad();
+      </script>
+       
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+
+    <script type="text/javascript" src="//mimiz.github.io/themes/casper/assets/js/jquery.fitvids.js?v=1495102367475"></script>
+    <script type="text/javascript" src="//mimiz.github.io/themes/casper/assets/js/index.js?v=1495102367475"></script>
+
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-18243278-5', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</body>
+</html>
