@@ -1,8 +1,8 @@
 = Configure docker httpd image
 // See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
-// :hp-image: /covers/coveConfigr.png
+:hp-image: http://www.duchess-france.org/wp-content/uploads/2015/06/docker.png
 // :published_at: 2019-01-31
-// :hp-tags: HubPress, Blog, Open_Source,
+:hp-tags: docker, apache, httpd, proxy, httpd.conf
 // :hp-alt-title: My English Title
 
 Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names.
