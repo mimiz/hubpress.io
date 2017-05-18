@@ -1,0 +1,40 @@
+= Configure docker httpd image
+// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+// :hp-image: /covers/coveConfigr.png
+// :published_at: 2019-01-31
+// :hp-tags: HubPress, Blog, Open_Source,
+// :hp-alt-title: My English Title
+
+Recently I had to publish multiple application on a single machine and all applications will be publicly available on their own domains names.
+
+As I am a docker addict, I want all my applications to be running as a docker container.
+
+Imagine I have the following applications : 
+
+|===
+| name
+| url
+| Container Name
+| Container Port (Expose)
+
+| app1
+| www.app1.lol
+| app1-container
+| 3000
+
+| app2
+| www.app2.lol
+| app2-container
+| 4000
+
+| app3
+| www.app3.lol
+| app3-container
+| 8080
+|===
+* app1 : www.app1.lol : container nam : 
+* app2 : www.app2.lol
+* app3 : www.app3.lol
+
+The thing is that I do not want to install a proxy (Apache or Nginx) on the docker host, so I wanted to create a docker container that will act as a proxy of all my applications
+
