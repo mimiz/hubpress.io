@@ -11,6 +11,7 @@ As I am a docker addict, I want all my applications to be running as a docker co
 
 Imagine I have the following applications : 
 
+[cols="1,2,2,1", options="header"]
 |===
 | name
 | url
@@ -32,9 +33,114 @@ Imagine I have the following applications :
 | app3-container
 | 8080
 |===
-* app1 : www.app1.lol : container nam : 
-* app2 : www.app2.lol
-* app3 : www.app3.lol
+
+IMPORTANT: I assume that all container are running (with or without `-P` flag)  
 
 The thing is that I do not want to install a proxy (Apache or Nginx) on the docker host, so I wanted to create a docker container that will act as a proxy of all my applications
+
+So I decided to use the https://hub.docker.com/_/httpd/[docker httpd:2.4] image.
+
+Create your _project_ directory : `mkdir ~/apache-proxy & cd ~/apache-proxy`
+
+== Extract httpd.conf 
+
+First you will need to "extract" the `httpd.conf` file from the image to be able to configure your apache server.
+
+So you need to start a docker httpd container in a terminal : 
+
+[source, bash]
+----
+docker run -it --name apacheTmp httpd:2.4
+----
+
+NOTE: The name _apacheTmp_ is just here to make extraction easy and to show you that this container will be deleted after use...
+
+Then open a new terminal window (or a new sesion if you are doing it remotely)
+
+And copy the `httpd.conf` file :
+
+[source, bash]
+----
+docker cp apacheTmp:/usr/local/apache2/conf/httpd.conf ~/apache-proxy
+----
+
+NOTE: personnaly I prefer to create a copy (to keep the original as it was) : `cp ~/apache-proxy/httpd.conf ~/apache-proxy/my-httpd.conf`.
+
+
+== Configure apache and vhosts
+
+Now I edited the `my-httpd.conf` file to enable modules *proxy* and *proxy_http*, 
+
+I just remove comment on the lines : 
+
+`LoadModule proxy_module modules/mod_proxy.so`
+
+And
+
+`LoadModule proxy_http_module modules/mod_proxy_http.so`
+
+
+Then I created, at the end of the files my 3 vhosts 
+
+[source, xml]
+.www.app1.lol
+----
+<VirtualHost *:80>
+  ServerName www.app1.lol
+  ProxyPass / http://app1:3000/
+</VirtualHost>
+----
+
+[source, xml]
+.www.app2.lol
+----
+<VirtualHost *:80>
+  ServerName www.app2.lol
+  ProxyPass / http://app2:4000/
+</VirtualHost>
+----
+
+[source, xml]
+.www.app3.lol
+----
+<VirtualHost *:80>
+  ServerName www.app3.lol
+  ProxyPass / http://app3:8080/
+</VirtualHost>
+----
+
+== Create Docker Container 
+
+Now I can Create my _"proxy"_ docker file : 
+
+[source, Dockerfile]
+.~/apache-proxy/Dockerfile
+----
+FROM httpd:2.4
+COPY ./my-httpd.conf /usr/local/apache2/conf/httpd.conf
+----
+
+So I can build now : 
+
+[source, bash]
+----
+docker build -t my/apache-proxy .
+----
+
+Then I can run it : 
+
+[source, bash]
+----
+docker run -d -p 80:80 --link app1-container:app1 --link app3-container:app3 --link app2-container:app2 --name my-proxy my/apache-proxy
+----
+
+And now you should be able to access your 3 apps ....
+
+
+
+
+
+
+
+
 
