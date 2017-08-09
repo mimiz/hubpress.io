@@ -1,6 +1,6 @@
 = Jenkins Docker and Gitlab
 :hp-image: /images/gitlab.png
-:hp-tags: jenkins, gitlab, ssh
+:hp-tags: jenkins, gitlab, ssh, docker
 
 
 In this blog post I will explain how I configured my Jenkins (running in a docker container) to be able to clone and push on a private Gitlab git repository.
