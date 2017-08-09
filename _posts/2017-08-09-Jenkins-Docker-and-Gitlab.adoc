@@ -1,0 +1,13 @@
+= Jenkins Docker and Gitlab
+// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+// :hp-image: /covers/cover.png
+// :published_at: 2019-01-31
+// :hp-tags: HubPress, Blog, Open_Source,
+// :hp-alt-title: My English Title
+
+In this blog post I will explain how I configured my Jenkins (running in a docker container) to be able to clone and push on a private Gitlab git repository.
+
+NOTE: I assume that you have docker and jenkins already installed and running
+
+== Create and get the Jenkins key
+
