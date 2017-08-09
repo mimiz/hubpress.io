@@ -1,13 +1,149 @@
 = Jenkins Docker and Gitlab
-// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
-// :hp-image: /covers/cover.png
-// :published_at: 2019-01-31
-// :hp-tags: HubPress, Blog, Open_Source,
-// :hp-alt-title: My English Title
+:hp-image: /images/gitlab.png
+:hp-tags: jenkins, gitlab, ssh
+
 
 In this blog post I will explain how I configured my Jenkins (running in a docker container) to be able to clone and push on a private Gitlab git repository.
 
 NOTE: I assume that you have docker and jenkins already installed and running
 
 == Create and get the Jenkins key
+
+First get the name (or the ID) of the Jenkins Container : 
+
+In a terminal type :
+
+[source, bash]
+----
+docker ps | grep jenkins
+----
+
+This should return something like that : 
+
+[source]
+----
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS                                              NAMES
+f26fa8c9bef9        jenkins/jenkins:lts   "/bin/tini -- /usr..."   41 hours ago        Up 41 hours         0.0.0.0:8080->8080/tcp, 0.0.0.0:50000->50000/tcp   jenkins
+----
+
+The ID is *f26fa8c9bef9* (from first column) and the name is *jenkins* (from last column). 
+
+Then _"enter"_ the container in order to create the SSH key : 
+
+[source, bash]
+----
+docker exec -it jenkins /bin/bash
+----
+
+NOTE: You need to adapt the name (*jenkins*) with the container ID or your name.
+
+So now you the terminal prompt should have changed : 
+
+[source]
+----
+jenkins@f26fa8c9bef9:/$
+----
+
+Check if you already have an ssh key : 
+
+[source, bash]
+----
+cat ~/.ssh/id_rsa.pub
+----
+
+If you have something else than `cat: /var/jenkins_home/.ssh/id_rsa.pup: No such file or directory` then you already have the key so you can directly go to the section <Add your credentials to jenkins>
+
+To create the key execute the following command : 
+
+[source, bash]
+----
+ssh-keygen
+----
+
+And do not use passphrase and accept default values : 
+
+[source]
+----
+Generating public/private rsa key pair.
+Enter file in which to save the key (/var/jenkins_home/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /var/jenkins_home/.ssh/id_rsa.
+Your public key has been saved in /var/jenkins_home/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:MNSY7yiVerfBoYR0vCZZeS9n73cevZJl/ezUoSZcoj8 jenkins@f26fa8c9bef9
+The key's randomart image is:
++---[RSA 2048]----+
+|     ..=         |
+|    ..B o        |
+|   . =o= .       |
+|    + *o+ +      |
+|     * =S= o . ..|
+|    o + = o + .o=|
+|     o . + + o+o=|
+|        . .E+o..*|
+|           ....=o|
++----[SHA256]-----+
+----
+
+Then get your public key, by copy / paste the ouptut of this command : 
+
+[source, bash]
+----
+cat ~/.ssh/id_rsa.pub
+----
+
+You should have something like that
+
+[source]
+----
+jenkins@f26fa8c9:/$ cat ~/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN6y54DIbEDp2gAgyu8ApzJ/tvxSu6myAkEQL3eUiLiLr5YC+uOalJ4AHkWwlmDWoT6SzlpvR+CQD2xEvsHoEumgTuUn1sNNVisIsyd19ga5yqBobM2/zhAaKtpkkuY9k1wOAZERsEIRm4Q5YTvVjNfIug/ZxVzg0xqJc0w9NGGuKNwOlBaCfjyJrhwdGU79Ijoq8sJ8SuswHc2DzvJWgdfXXd1T7w+NdOKqR+yzF5UXIm2uP6x/rVJ6OuINjFY0ODIkLvJtyvaHsIGAJZP21mJlJRPx18vAr6Phy+YmW2+UgEi2I6jxcQ+DYDT3TbTO+qpc+7KOLnRZyQKwnNu1T jenkins@f26fa8c9
+----
+
+== Add your credentials to jenkins
+
+Now you created your SSH key so you can create the Credential.
+
+Go to your jenkins, log in, and and click on left menu item _"Credentials"_, then sub item _"System"_, Select _"Global Credentials (unrestricted)"_
+
+image::/images/jenkins_global_credentials.png[]
+
+Then click on _"Add Credentials"_ in left menu.
+
+And fill the form as this : 
+
+image::/images/jenkins_add_credentials.png[]
+
+* **Kind** : SSH Username with private key
+* **Scope** : Global (Jenkins, nodes, items, all ...)
+* **Username** : git
+* **Private** Key : From the Jenkins master ~/.ssh
+* **Passphrase** : empty (or your pass phrase if you have one)
+* **ID** : empty
+* **Description** : The Jenkins SSH KEy (or whatever you want)
+
+
+Then Save.
+
+== Add your key to Gitlab
+
+Now you have your ssh key, so go to your gitlab project you want to build with Jenkins, and click on "Settings", then "Repository".
+
+image::/images/gitlab_settings_repository_deploy_keys.png[]
+
+* **Title** : Jenkins (Or anything else)
+* **Key** : your public key (the output of the command `cat ~/.ssh/id_rsa.pub`)
+
+You can check the **Write access allowed** if you need it.
+
+Then save.
+
+== Create a jenkins job
+
+Now, in Jenkins, you can create a job that use your repository, just remember to use the _"SSH"_ version of your repository url : 
+
+image::/images/jenkins_job_pipeline_credentials.png[]
+
+And it should be able to clone ! 
 
