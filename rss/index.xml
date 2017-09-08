@@ -1,4 +1,212 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><image><url>images/bordeaux_reduce.png</url><title>Rémi&apos;s Blog</title><link>https://mimiz.github.io</link></image><generator>RSS for Node</generator><lastBuildDate>Wed, 09 Aug 2017 20:11:55 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Jenkins Docker and Gitlab]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Rémi's Blog]]></title><description><![CDATA[A new blog ...]]></description><link>https://mimiz.github.io</link><image><url>images/bordeaux_reduce.png</url><title>Rémi&apos;s Blog</title><link>https://mimiz.github.io</link></image><generator>RSS for Node</generator><lastBuildDate>Fri, 08 Sep 2017 09:24:23 GMT</lastBuildDate><atom:link href="https://mimiz.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[OpenVPN Server in a Docker Container]]></title><description><![CDATA[<div class="paragraph">
+<p>Since some months now I&#8217;m a kind of digital nomad, and working remotly from Cafés, Train stations, Airports or CoWorking spaces. And often I need to "secure" a little bit my connections.</p>
+</div>
+<div class="paragraph">
+<p>I am a Docker lover and I also have VPS at OVH, so I decided to try to create my own VPN server in a docker Container and to host it on my VPS Instance.</p>
+</div>
+<div class="paragraph">
+<p>After a quick search on Google I found <a href="https://memo-linux.com/un-serveur-openvpn-en-moins-de-5-minutes-avec-docker/">this article</a> (in French) and it made the job !</p>
+</div>
+<div class="paragraph">
+<p>As I wanted to details some part of the tutorial I decided to write mine based done by <a href="https://memo-linux.com/author/fred/">fred</a>.</p>
+</div>
+<div class="paragraph">
+<p>We will use the <a href="https://hub.docker.com/r/kylemanna/openvpn/">kylemanna/openvpn</a> docker image.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First create the <em>"datas"</em> container</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --name ovpn-data -v /etc/openvpn busybox</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create configuration files</p>
+<div class="paragraph">
+<p>Please replace here <code>VPN.SERVERNAME.COM</code> by your server hostname. (should be able to connect through this name)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data --rm kylemanna/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Generate RSA Keys</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn ovpn_initpki</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is the ouput :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">init-pki complete; you may now create a CA or requests.
+Your newly created PKI dir is: /etc/openvpn/pki
+
+Generating a 2048 bit RSA private key
+........................................+++
+.+++
+writing new private key to '/etc/openvpn/pki/private/ca.key.XXXXDOmiGB'
+Enter PEM pass phrase: <i class="conum" data-value="1"></i><b>(1)</b>
+Verifying - Enter PEM pass phrase: <i class="conum" data-value="1"></i><b>(1)</b>
+
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+
+Common Name (eg: your user, host, or server name) [Easy-RSA CA]: vpn.servername.com <i class="conum" data-value="2"></i><b>(2)</b>
+
+CA creation complete and you may now import and sign cert requests.
+Your new CA certificate file for publishing is at:
+/etc/openvpn/pki/ca.crt
+
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time <i class="conum" data-value="3"></i><b>(3)</b>
+
+.......................................................................................+...........................................................................................................................................................................................+.......................................................................................+...................................................................................................................................++*++*
+
+DH parameters of size 2048 created at /etc/openvpn/pki/dh.pem
+
+Generating a 2048 bit RSA private key
+.............................+++
+..............................+++
+writing new private key to '/etc/openvpn/pki/private/vpn.servername.com.key.XXXXMkJFIA'
+-----
+Using configuration from /usr/share/easy-rsa/openssl-1.0.cnf
+Enter pass phrase for /etc/openvpn/pki/private/ca.key: <i class="conum" data-value="1"></i><b>(1)</b>
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+commonName            :ASN.1 12:'vpn.servername.com'
+Certificate is to be certified until Sep  6 08:42:18 2027 GMT (3650 days)
+
+Write out database with 1 new entries
+Data Base Updated
+Using configuration from /usr/share/easy-rsa/openssl-1.0.cnf
+Enter pass phrase for /etc/openvpn/pki/private/ca.key:
+
+An updated CRL has been created.
+CRL file: /etc/openvpn/pki/crl.pem</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enter a secured PassPhrase</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Enter the name you entered before</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This is not false !!</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Now we can start the container</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data -d -p 1194:1194/udp --cap-add=NET_ADMIN --name openvpn-server kylemanna/openvpn</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now we need to create the clients configuration file :</p>
+<div class="paragraph">
+<p>You will need to do that for all your users.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a file for a user (with password <strong class="red"><em>prefered</em></strong>)</p>
+<div class="paragraph">
+<p>This will prompt for a passphrase, wich is the password the user will need to give when it wants to connect</p>
+</div>
+<div class="paragraph">
+<p>This will also ask you for the Passphrase of the Server Key (defined two steps bedore)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn easyrsa build-client-full USERNAME <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace USERNAME by the name of the user</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Create a file for a user (without password )</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn easyrsa build-client-full USERNAME nopass <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace <code>USERNAME</code> by the name of the user</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Retreive the client file :</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sh" data-lang="sh">docker run --volumes-from ovpn-data --rm kylemanna/openvpn ovpn_getclient USERNAME &gt; USERNAME.ovpn <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace <code>USERNAME</code> by the name of the user</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Here we are, now we need to try it ! Copy the <code>ovpn</code> file on your client, then use your default VPN Client Tool (I&#8217;m on a Mac Laptop and I currectly use Tunnelblick) to connect.</p>
+</div>
+<div class="paragraph">
+<p><strong>It should work.</strong></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+I had to change my DNS settings to use DNS server 8.8.8.8.
+</td>
+</tr>
+</table>
+</div>]]></description><link>https://mimiz.github.io/2017/09/08/OpenVPN-Server-in-a-Docker-Container.html</link><guid isPermaLink="true">https://mimiz.github.io/2017/09/08/OpenVPN-Server-in-a-Docker-Container.html</guid><category><![CDATA[docker]]></category><category><![CDATA[openvpn]]></category><dc:creator><![CDATA[mimiz33]]></dc:creator><pubDate>Fri, 08 Sep 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Jenkins Docker and Gitlab]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this blog post I will explain how I configured my Jenkins (running in a docker container) to be able to clone and push on a private Gitlab git repository.</p>
