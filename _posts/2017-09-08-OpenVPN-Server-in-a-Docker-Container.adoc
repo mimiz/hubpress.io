@@ -1,0 +1,143 @@
+= OpenVPN Server in a Docker Container
+// = OpenVPN Server in a Docker Container
+// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+// :hp-image: /covers/cover.png
+// :published_at: 2019-01-31
+// :hp-tags: HubPress, Blog, Open_Source,
+// :hp-alt-title: My English Title
+
+Since some months now I'm a kind of digital nomad, and working remotly from Cafés, Train stations, Airports or CoWorking spaces. And often I need to "secure" a little bit my connections. 
+
+I am a Docker lover and I also have VPS at OVH, so I decided to try to create my own VPN server in a docker Container and to host it on my VPS Instance.
+
+After a quick search on Google I found https://memo-linux.com/un-serveur-openvpn-en-moins-de-5-minutes-avec-docker/[this article] (in French) and it made the job !
+
+As I wanted to details some part of the tutorial I decided to write mine based done by https://memo-linux.com/author/fred/[fred].
+
+We will use the https://hub.docker.com/r/kylemanna/openvpn/[kylemanna/openvpn] docker image.
+
+* First create the _"datas"_ container
++
+[source, sh]
+----
+docker run --name ovpn-data -v /etc/openvpn busybox
+----
+* Create configuration files
++
+Please replace here `VPN.SERVERNAME.COM` by your server hostname. (should be able to connect through this name)
+[source, sh]
+----
+docker run --volumes-from ovpn-data --rm kylemanna/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
+----
+
+* Generate RSA Keys
++ 
+[source, sh]
+----
+docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn ovpn_initpki
+----
+Here is the ouput : 
+
+[source, sh]
+----
+init-pki complete; you may now create a CA or requests.
+Your newly created PKI dir is: /etc/openvpn/pki
+
+Generating a 2048 bit RSA private key
+........................................+++
+.+++
+writing new private key to '/etc/openvpn/pki/private/ca.key.XXXXDOmiGB'
+Enter PEM pass phrase: <1>
+Verifying - Enter PEM pass phrase: <1>
+
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+
+Common Name (eg: your user, host, or server name) [Easy-RSA CA]: vpn.servername.com <2>
+
+CA creation complete and you may now import and sign cert requests.
+Your new CA certificate file for publishing is at:
+/etc/openvpn/pki/ca.crt
+
+Generating DH parameters, 2048 bit long safe prime, generator 2
+This is going to take a long time <3>
+
+.......................................................................................+...........................................................................................................................................................................................+.......................................................................................+...................................................................................................................................++*++*
+
+DH parameters of size 2048 created at /etc/openvpn/pki/dh.pem
+
+Generating a 2048 bit RSA private key
+.............................+++
+..............................+++
+writing new private key to '/etc/openvpn/pki/private/vpn.servername.com.key.XXXXMkJFIA'
+-----
+Using configuration from /usr/share/easy-rsa/openssl-1.0.cnf
+Enter pass phrase for /etc/openvpn/pki/private/ca.key: <1>
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+commonName            :ASN.1 12:'vpn.servername.com'
+Certificate is to be certified until Sep  6 08:42:18 2027 GMT (3650 days)
+
+Write out database with 1 new entries
+Data Base Updated
+Using configuration from /usr/share/easy-rsa/openssl-1.0.cnf
+Enter pass phrase for /etc/openvpn/pki/private/ca.key:
+
+An updated CRL has been created.
+CRL file: /etc/openvpn/pki/crl.pem
+----
+<1> Enter a secured PassPhrase
+<2> Enter the name you entered before
+<3> This is not false !!
+
+* Now we can start the container 
++ 
+[source, sh]
+----
+docker run --volumes-from ovpn-data -d -p 1194:1194/udp --cap-add=NET_ADMIN --name openvpn-server kylemanna/openvpn
+----
+
+* Now we need to create the clients configuration file :
++ 
+You will need to do that for all your users.
+
+** Create a file for a user (with password [red]*_prefered_*)
++
+This will prompt for a passphrase, wich is the password the user will need to give when it wants to connect
+
+This will also ask you for the Passphrase of the Server Key (defined two steps bedore)
+
+[source, sh]
+----
+docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn easyrsa build-client-full USERNAME <1>
+----
+<1> Replace USERNAME by the name of the user
+
+** Create a file for a user (without password )
++
+[source, sh]
+----
+docker run --volumes-from ovpn-data --rm -it kylemanna/openvpn easyrsa build-client-full USERNAME nopass <1>
+----
+<1> Replace `USERNAME` by the name of the user
+
+** Retreive the client file : 
+
+[source, sh]
+----
+docker run --volumes-from ovpn-data --rm kylemanna/openvpn ovpn_getclient USERNAME > USERNAME.ovpn <1>
+----
+<1> Replace `USERNAME` by the name of the user
+
+Here we are, now we need to try it ! Copy the `ovpn` file on your client, then use your default VPN Client Tool (I'm on a Mac Laptop and I currectly use Tunnelblick) to connect.
+
+It should work.
+
+NOTE: I had to change my DNS settings to use DNS server 8.8.8.8.
+
+
