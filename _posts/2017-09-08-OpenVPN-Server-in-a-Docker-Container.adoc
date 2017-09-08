@@ -1,10 +1,9 @@
 = OpenVPN Server in a Docker Container
 // = OpenVPN Server in a Docker Container
 // See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
-// :hp-image: /covers/cover.png
+:hp-image: https://mimiz.github.io/images/openvpntech_logo1.png
 // :published_at: 2019-01-31
-// :hp-tags: HubPress, Blog, Open_Source,
-// :hp-alt-title: My English Title
+:hp-tags: docker, openvpn
 
 Since some months now I'm a kind of digital nomad, and working remotly from Cafés, Train stations, Airports or CoWorking spaces. And often I need to "secure" a little bit my connections. 
 
